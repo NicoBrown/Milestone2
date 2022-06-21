@@ -7,9 +7,8 @@ import Experience from "./experience.js"
 export default class world{
     constructor() {
         this.experience = new Experience();
-        this.scene = this.experience.scene;
-        this.setSceneModel();
-        console.log(this);
+        //this.scene = this.experience.scene;
+        this.setInstance();
 
         // this.on("ready", () => {
         //     this.setSceneModel();
@@ -17,7 +16,7 @@ export default class world{
         // })
     }
 
-    setSceneModel(){
+    setInstance(){
 /**
  * -----------------------------------------------------
  * Loader Textures
@@ -92,8 +91,8 @@ var roadMaterial = new THREE.MeshLambertMaterial( { color: 0xAEAEAE, wireframe: 
     roadMesh.scale.set(0.5,0.5,0.5);
 
     groupMesh.add(roadMesh);
-    this.experience.scene.add(groupMesh);
 
+    return groupMesh;
 
     }
 }

@@ -27,18 +27,19 @@ export default class Experience {
 
         window.experience = this; // to get acces to the class in the terminal 
         //Options
-        this.canvas = canvas;
+        //this.canvas = canvas;
             
         //Setup
-        instance = this;
-        this.canvas = document.querySelector('canvas.webgl');
-        this.scene = new THREE.Scene()
-        this.camera = new THREE.Camera();
-        this.world = new world();
+        //var instance = this;
+        var canvas = document.querySelector('canvas.webgl');
+        var scene = new THREE.Scene()
+        //var camera = new THREE.PerspectiveCamera();
+        var worldobject = new world();
+        var screenobject = new screens();
         // this.postprocess = new Postprocess()
         // this.raycaster = new Raycaster()
 
-        console.log(this)
+        //console.log(this)
 
 
 /**
@@ -57,12 +58,16 @@ const sizes = {
  * -----------------------------------------------------
  */
 // Base camera
-this.camera = new THREE.PerspectiveCamera(50, sizes.width / sizes.height, 0.1, 400);
-this.scene.add(this.camera);
+var camera = new THREE.PerspectiveCamera(50, sizes.width / sizes.height, 0.1, 2000);
+scene.add(camera);
+
+scene.add(worldobject.setInstance());
+scene.add(screenobject.setInstance());
+
 
 
 // Controls
-const controls = new OrbitControls(this.camera, this.canvas);
+const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 controls.dampingFactor = 0.001;
 controls.minDistance = 0;
@@ -85,7 +90,7 @@ sunLight.shadow.mapSize.set(1024, 1024);
 sunLight.shadow.normalBias = 0.05;
 sunLight.position.set(5, 250, 0);
 sunLight.rotation.set(0, 10, 10);
-this.scene.add(sunLight);
+scene.add(sunLight);
 // const sunLightHelper = new THREE.DirectionalLightHelper(sunLight, 3);
 // scene.add(sunLightHelper);
 
@@ -142,14 +147,6 @@ const matcapmaterial = new THREE.MeshMatcapMaterial({ matcap: matcaptexture})
 // Group Mesh
 const groupMesh = new THREE.Group()
 
-var screenobject = new screens();
-
-console.log(screenobject);
-
-//var worldobject = new world();
-
-this.scene.add(screenobject);
-
 // //create robot
 // const OBJloader = new OBJLoader();
 
@@ -195,17 +192,17 @@ this.scene.add(screenobject);
         textMesh.name = "textMesh";
         geometry.center();
         geometry.rotateY(Math.PI);
-        this.scene.add(textMesh);
+        groupMesh.add(textMesh);
         
-        this.camera.position.set(textMesh.position.x,textMesh.position.y, textMesh.position.z-200);
+        camera.position.set(textMesh.position.x,textMesh.position.y, textMesh.position.z-200);
         camera.lookAt(textMesh.position.x,textMesh.position.y,textMesh.position.z);
         controls.target.set(0,200,200);
         controls.update();
+
     } );
 
 //groupMesh.add(mesh);
-this.scene.add(groupMesh);
-
+        scene.add(groupMesh);
 
 /**
  * -----------------------------------------------------
@@ -213,7 +210,7 @@ this.scene.add(groupMesh);
  * -----------------------------------------------------
  */
 const renderer = new THREE.WebGLRenderer({
-    canvas: this.canvas,
+    canvas: canvas,
     antialias: true,
     alpha: true,
 });
@@ -240,7 +237,7 @@ window.addEventListener('mousemove', (event) => {
     cursor.positionReal.y = event.clientY
 
     const raycaster = new THREE.Raycaster()
-    raycaster.setFromCamera(cursor.position, this.camera)
+    raycaster.setFromCamera(cursor.position, camera)
     const intersects = raycaster.intersectObjects(groupMesh.children, true)
 
     // // collect array of uuids of currently hovered objects
@@ -293,7 +290,7 @@ window.addEventListener('mousemove', (event) => {
 window.addEventListener('pointerdown', () => {
 
     const raycaster = new THREE.Raycaster()
-    raycaster.setFromCamera(cursor.position, this.camera)
+    raycaster.setFromCamera(cursor.position, camera)
     const intersects = raycaster.intersectObjects(groupMesh.children, true)
     // If found
     if (intersects.length && intersects[0].object.userData.URL != undefined) {
@@ -304,7 +301,7 @@ window.addEventListener('pointerdown', () => {
 window.addEventListener('onmouseover', () => {
 
     const raycaster = new THREE.Raycaster()
-    raycaster.setFromCamera(cursor.position, this.camera)
+    raycaster.setFromCamera(cursor.position, camera)
     const intersects = raycaster.intersectObjects(groupMesh.children, true)
     // If found
     if (intersects.length) {
@@ -319,8 +316,8 @@ window.addEventListener('resize', () =>
     sizes.height = window.innerHeight;
 
     // Update camera
-    this.camera.aspect = sizes.width / sizes.height;
-    this.camera.updateProjectionMatrix();
+    camera.aspect = sizes.width / sizes.height;
+    camera.updateProjectionMatrix();
 
     // Update renderer
     renderer.setSize(sizes.width, sizes.height);
@@ -329,7 +326,7 @@ window.addEventListener('resize', () =>
     
     if(sizes.width < 1000)
     {
-        let textmesh = this.scene.getObjectByName('textMesh');
+        let textmesh = scene.getObjectByName('textMesh');
         textmesh.scale.set(0.5,0.5,0.5);
         // if(camera.position.x > 24){
         //     camera.position.x = 15;
@@ -341,7 +338,7 @@ window.addEventListener('resize', () =>
     }
     if(sizes.width > 1000)
     {
-        let textmesh = this.scene.getObjectByName('textMesh');
+        let textmesh = scene.getObjectByName('textMesh');
         textmesh.scale.set(1,1,1);
         
         // if(camera.position.x > 24){
@@ -388,7 +385,7 @@ const tick = () =>
     controls.update();
 
     // Render
-    renderer.render(this.scene, this.camera);
+    renderer.render(scene, camera);
 
     // Call tick again on the next frame
     window.requestAnimationFrame(tick);

@@ -8,10 +8,8 @@ import Experience from "./experience.js"
 export default class screens{
     constructor () {
         this.experience = new Experience();
-        this.scene = this.experience.scene;
-        this.canvas = this.experience.canvas;
-        this.camera = this.experience.camera;
-        console.log(this);
+        //this.scene = this.experience.scene;
+        //this.canvas = this.experience.canvas;
         this.setInstance();
     }
 
@@ -21,7 +19,7 @@ export default class screens{
  * Loader Textures
  * -----------------------------------------------------
  */
-const textureLoaderPF = new THREE.TextureLoader().load('./assets/textures/purefitness_screenshot.png');
+const textureLoaderPF = new THREE.TextureLoader().load('./assets/textures/purefitness-screenshot.png');
 const textureLoaderLR = new THREE.TextureLoader().load('./assets/textures/loverunning-screenshot.jpg');
 
 
@@ -45,8 +43,6 @@ const screenLRMaterial = new THREE.MeshBasicMaterial({
  * Object
  * -----------------------------------------------------
  */
-
-
 // Group Mesh
 const groupMesh = new THREE.Group();
 groupMesh.name = "screen-objects";
@@ -63,9 +59,10 @@ screenPF.name = "screen-pf";
 
 //LoveRunning Screen
 const screenLR = new THREE.Mesh(screenGeometry, screenLRMaterial);
-screenLR.position.set(10, 5, 100);
+screenLR.position.set(120, 5, 100);
+screenLR.rotateOnAxis(new THREE.Vector3(0,1,0),2)
 screenLR.userData = {URL: 'https://nicobrown.github.io/LoveRunning/'};
-screenLR.name = "screen-pf";
+screenLR.name = "screen-lr";
 //end love running Screen
 
 //Github Screen? or text location?
@@ -73,6 +70,8 @@ screenLR.name = "screen-pf";
 //end GH screen
 
 groupMesh.add(screenPF);
-this.experience.scene.add(groupMesh);
+groupMesh.add(screenLR);
+
+return groupMesh;
 }
 }
