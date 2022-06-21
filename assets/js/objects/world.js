@@ -1,9 +1,7 @@
 import * as THREE from 'three'
-import * as screens from "./screens"
+import * as screens from "./screens.js"
 
-// Utils
-import * as Utils from './utils'
-import { CompositeConstraint } from '@tweakpane/core'
+
 
 export default class world{
     constructor () {

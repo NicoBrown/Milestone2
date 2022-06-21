@@ -1,13 +1,8 @@
 import * as THREE from 'three'
 
-// Shaders
-import SimpleVertexShader from './shaders/simple/vertex.glsl'
-import SimpleFragmentShader from './shaders/simple/fragment.glsl'
 // Gsap
-import gsap from 'gsap'
-// Utils
-import * as Utils from './utils'
-import { CompositeConstraint } from '@tweakpane/core'
+//import gsap from 'gsap'
+
 
 export default class screens{
     constructor () {

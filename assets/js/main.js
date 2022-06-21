@@ -1,34 +1,15 @@
 import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
-import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js'
-import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js"
-
-import { world } from "./world.js"
-
-// Tweakpane
-import { Pane } from 'tweakpane'
-import * as EssentialsPlugin from '@tweakpane/plugin-essentials'
-// Shaders
-import SimpleVertexShader from './shaders/simple/vertex.glsl'
-import SimpleFragmentShader from './shaders/simple/fragment.glsl'
-// Gsap
-import gsap from 'gsap'
-// Utils
-import * as Utils from './utils'
-import { CompositeConstraint } from '@tweakpane/core'
+import { OrbitControls } from 'https://unpkg.com/three/examples/jsm/controls/OrbitControls.js';
+import { OBJLoader } from 'https://unpkg.com/three/examples/jsm/loaders/OBJLoader.js';
+import { FontLoader } from 'https://unpkg.com/three/examples/jsm/loaders/FontLoader.js';
+import { TextGeometry } from 'https://unpkg.com/three/examples/jsm/geometries/TextGeometry.js';
 import { Camera } from 'three'
 
-/**
-* ------------------------------------
-* Author: Vinces
-* Website: https://vinces.io
-* v.0.1
-* Three.js - SIMPLE STARTER THREE.JS
-* Work In Progress
-* ------------------------------------
-*/
 
+import * as world from "./objects/world.js"
+
+// Gsap
+//import gsap from 'gsap'
 
 /**
  * -----------------------------------------------------
@@ -136,11 +117,11 @@ const normalMaterial = new THREE.MeshNormalMaterial();
 const pureFitMaterial = new THREE.MeshBasicMaterial({ map: purefitTexture });
 const matcapmaterial = new THREE.MeshMatcapMaterial({ matcap: matcaptexture})
 
-// Simple Shaders Material
-const shaderMaterial = new THREE.ShaderMaterial({
-    vertexShader: SimpleVertexShader,
-    fragmentShader: SimpleFragmentShader,
-});
+// // Simple Shaders Material
+// const shaderMaterial = new THREE.ShaderMaterial({
+//     vertexShader: SimpleVertexShader,
+//     fragmentShader: SimpleFragmentShader,
+// });
 
 // scene background material
 // scene.background = new THREE.MeshBasicMaterial({map: backgroundtexture});
@@ -416,7 +397,7 @@ window.addEventListener('resize', () =>
  * -----------------------------------------------------
  */
 
-gsap.fromTo(groupMesh.getObjectByName('cube').position,{ duration: 1, delay: 1, x: 20}, { duration: 1, delay: 1, x: -20});
+//gsap.fromTo(groupMesh.getObjectByName('cube').position,{ duration: 1, delay: 1, x: 20}, { duration: 1, delay: 1, x: -20});
 
 const tick = () =>
 {
