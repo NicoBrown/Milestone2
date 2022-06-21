@@ -31,17 +31,19 @@
     <link rel="stylesheet" href="./assets/css/main.css" />
   </head>
   <body>
-    <div class="container col-12 offset-10" id="button-container">
-      <button
-        class="btn flex-end"
-        type="button"
-        data-bs-toggle="offcanvas"
-        data-bs-target="#offcanvasRight"
-        aria-controls="offcanvasRight"
-        id="offcanvas-button"
-      >
-        <i class="fa fa-bars"></i>
-      </button>
+    <div class="row container">
+      <div class="col-12" id="button-container">
+        <button
+          class="btn flex-end"
+          type="button"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#offcanvasRight"
+          aria-controls="offcanvasRight"
+          id="offcanvas-button"
+        >
+          <i class="fa fa-bars"></i>
+        </button>
+      </div>
     </div>
     <div
       class="offcanvas offcanvas-end"
@@ -68,43 +70,6 @@
         <a href="#" onclick="">Contact</a>
       </div>
     </div>
-    <!-- <div class="container">
-      <svg id="path" viewBox="0 0 1178 4663" fill="none">
-        <path
-          preserveAspectRatio="xMidYMid meet"
-          class="path"
-          d="M221.247 28H1063.84L1150 125.013V284.755V987.184V2378.91H643.761V3540.87H28V4635H643.761V4093.04"
-          stroke="#F9F8F8"
-          stroke-width="55"
-          stroke-linecap="round"
-        />
-      </svg>
-    </div>
-    <section class="welcome-section">
-      <div id="welcome-div">
-        <h1 class="scroll" data-rate=".2" data-direction="horizontal" dataset>
-          Nicos Portfolio
-        </h1>
-      </div>
-    </section>
-
-    <section class="about-section">
-      <div id="about-div"></div>
-    </section>
-
-    <section class="career-bim-section">
-      <div id="career-bim-div"></div>
-    </section>
-
-    <section class="portfolio-section">
-      <div class="col-12" id="portfolio-pure-fitness-div">
-        <div class="col-6" id="pure-fitness-about-div">
-          <h1>Pure Fitness Website</h1>
-        </div>
-        <canvas class="webgl col-6 offset-6"></canvas>
-      </div>
-      <div id="portfolio-love-running-div"></div>
-    </section> -->
     <section id="canvas-section">
       <div class="row">
         <canvas class="col-12 webgl"></canvas>

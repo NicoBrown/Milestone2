@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import Experience from "./experience.js"
 
 // Gsap
 //import gsap from 'gsap'
@@ -6,8 +7,11 @@ import * as THREE from 'three'
 
 export default class screens{
     constructor () {
-
-        
+        this.experience = new Experience();
+        this.scene = this.experience.scene;
+        this.canvas = this.experience.canvas;
+        this.camera = this.experience.camera;
+        console.log(this);
         this.setInstance();
     }
 
@@ -17,8 +21,8 @@ export default class screens{
  * Loader Textures
  * -----------------------------------------------------
  */
-const textureLoaderPF = new THREE.TextureLoader().load('./textures/purefitness_screenshot.png');
-const textureLoaderLR = new THREE.TextureLoader().load('./textures/loverunning_screenshot.png');
+const textureLoaderPF = new THREE.TextureLoader().load('./assets/textures/purefitness_screenshot.png');
+const textureLoaderLR = new THREE.TextureLoader().load('./assets/textures/loverunning-screenshot.jpg');
 
 
 /**
@@ -44,7 +48,8 @@ const screenLRMaterial = new THREE.MeshBasicMaterial({
 
 
 // Group Mesh
-const groupMesh = new THREE.Group()
+const groupMesh = new THREE.Group();
+groupMesh.name = "screen-objects";
 
 // Define the screen rectangles
 const screenGeometry = new THREE.BoxGeometry(16, 9, 0.1);
@@ -68,7 +73,6 @@ screenLR.name = "screen-pf";
 //end GH screen
 
 groupMesh.add(screenPF);
-scene.add(groupMesh);
-
-
-}}
+this.experience.scene.add(groupMesh);
+}
+}
