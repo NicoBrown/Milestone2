@@ -39,11 +39,11 @@ var roadMaterial = new THREE.MeshLambertMaterial( { color: 0xAEAEAE, wireframe: 
 
 /**
  * -----------------------------------------------------
- * Object
+ * Objects
  * -----------------------------------------------------
- */
+ */ 
 
-
+        
     // Group Mesh
     const groupMesh = new THREE.Group();
     groupMesh.name = "world-object";
@@ -91,7 +91,7 @@ var roadMaterial = new THREE.MeshLambertMaterial( { color: 0xAEAEAE, wireframe: 
     roadMesh.scale.set(0.5,0.5,0.5);
 
     groupMesh.add(roadMesh);
-
+    groupMesh.visible = false;
     return groupMesh;
 
     }
