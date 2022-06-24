@@ -9,8 +9,8 @@ import { Scene, ShapeUtils } from "three";
 export default class screens {
   constructor() {
     this.experience = new Experience();
-    //this.scene = this.experience.scene;
-    //this.canvas = this.experience.canvas;
+    this.scene = this.experience.scene;
+    this.canvas = this.experience.canvas;
     this.setInstance();
   } 
 
@@ -65,14 +65,14 @@ export default class screens {
     // We need to load it separately, it is included in this pen's Settings > JavaScript
     // https://threejs.org/docs/#examples/en/loaders/SVGLoader
 
-    const SVGurls = 
+    const SVGurls =
       ["../assets/images/azure-1-logo-svgrepo-com.svg",
         "../assets/images/css-3-logo-svgrepo-com.svg",
         "../assets/images/js-svgrepo-com.svg",
         "../assets/images/typescript-svgrepo-com.svg",
         "../assets/images/github-svgrepo-com.svg",
         "../assets/images/html-5-logo-svgrepo-com.svg"
-      ]
+      ];
 
     for (let i = 0; i < SVGurls.length; i++)
     {
@@ -115,7 +115,7 @@ export default class screens {
             });
           });
         }
-      ))
+      ));
     }
 
 

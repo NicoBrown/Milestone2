@@ -1,0 +1,25 @@
+{
+  "name": "milestone2",
+  "version": "1.0.0",
+  "description": "Milestone Project 2",
+  "main": "main.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NicoBrown/Milestone2.git"
+  },
+  "author": "N Brown",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NicoBrown/Milestone2/issues"
+  },
+  "homepage": "https://github.com/NicoBrown/Milestone2#readme",
+  "devDependencies": {
+    "jest": "^28.1.1",
+    "jshint": "^2.13.4",
+    "mocha": "^10.0.0",
+    "three": "^0.141.0"
+  }
+}

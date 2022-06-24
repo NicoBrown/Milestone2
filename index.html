@@ -31,17 +31,7 @@
     <link rel="stylesheet" href="./assets/css/main.css" />
   </head>
   <body>
-    <div class="row container">
-      <div class="col-12 collapsed">
-        <div id="info">
-          "W" translate | "E" rotate | "R" scale | "+/-" adjust size<br />
-          "Q" toggle world/local space | "Shift" snap to grid<br />
-          "X" toggle X | "Y" toggle Y | "Z" toggle Z | "Spacebar" toggle
-          enabled<br />
-          "Esc" reset current transform<br />
-          "C" toggle camera | "V" random zoom
-        </div>
-      </div>
+    <div class="row">
       <div class="col-12" id="button-container">
         <button
           class="btn flex-end"
@@ -53,6 +43,14 @@
         >
           <i class="fa fa-bars"></i>
         </button>
+      </div>
+      <div class="col-12">
+        <div id="info" class="text-center">
+          <p>
+            "W" translate | "E" rotate | "R" scale <br />
+            "Esc" reset current transform | "C" toggle camera | "V" random zoom
+          </p>
+        </div>
       </div>
     </div>
     <div
@@ -163,5 +161,7 @@
       integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
       crossorigin="anonymous"
     ></script>
+    <!-- JS charting CDN -->
+    <!-- <script src="https://code.jscharting.com/latest/jscharting.js"></script> -->
   </body>
 </html>

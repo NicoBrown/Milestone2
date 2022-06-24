@@ -1,6 +1,6 @@
-import * as THREE from 'three'
-import * as screens from "./screens.js"
-import Experience from "./experience.js"
+import * as THREE from 'three';
+import * as screens from "./screens.js";
+import Experience from "./experience.js";
 
 
 
@@ -91,8 +91,9 @@ var roadMaterial = new THREE.MeshLambertMaterial( { color: 0xAEAEAE, wireframe: 
     roadMesh.scale.set(0.5,0.5,0.5);
 
     groupMesh.add(roadMesh);
-    groupMesh.visible = false;
-    return groupMesh;
+        groupMesh.visible = false;
+        console.log(groupMesh);
+        return groupMesh;
 
     }
 }
