@@ -33,7 +33,6 @@ export default class Experience {
             
         //Setup
         //var instance = this;
-        var canvas = document.querySelector('canvas.webgl');
         var scene = new THREE.Scene();
         //var camera = new THREE.PerspectiveCamera();
         var worldobject = new world();

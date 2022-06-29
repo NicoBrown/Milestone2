@@ -83,7 +83,7 @@ export default class screens {
           // it happens in the process of mapping from 2d to 3d coordinate system
           SVGGroup.scale.y *= -1;
           SVGGroup.scale.x *= -1;
-
+          SVGGroup.scale.set(0.1, 0.1, 0.1);
           //var title = data.find('title').text();
 
           //console.log(title)
