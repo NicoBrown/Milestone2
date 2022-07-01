@@ -1,15 +1,13 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'https://unpkg.com/three/examples/jsm/controls/OrbitControls.js';
-import { OBJLoader } from 'https://unpkg.com/three/examples/jsm/loaders/OBJLoader.js';
 import { FontLoader } from 'https://unpkg.com/three/examples/jsm/loaders/FontLoader.js';
 import { TextGeometry } from 'https://unpkg.com/three/examples/jsm/geometries/TextGeometry.js';
 import { SVGLoader } from 'https://unpkg.com/three/examples/jsm/loaders/SVGLoader.js';
+import { FBXLoader } from 'https://unpkg.com/three/examples/jsm/loaders/FBXLoader.js';
 import { TransformControls, TransformControlsGizmo, TransformControlsPlane } from 'https://unpkg.com/three/examples/jsm/controls/TransformControls.js';
-import { Camera, Group, Scene } from 'three';
-
-
-import world from "./world.js";
-import screens from './screens.js';
+import { createCamera } from "./createCamera.js";
+import { createRender } from "./createRender.js";
+import { createLight } from './createLight.js';
+import { createControls } from './createControls.js';
 
 // Gsap
 //import gsap from 'gsap'
@@ -20,231 +18,144 @@ let instance = null;
 export default class Experience {
 
     constructor(canvas) {
-
         if (instance) {
             return instance;
         }
-
         instance = this;
+        window.experience = this; // to get access to the class in the terminal 
 
-        window.experience = this; // to get acces to the class in the terminal 
-        //Options
-        //this.canvas = canvas;
-            
-        //Setup
-        //var instance = this;
+        const sizes = {
+            width: window.innerWidth,
+            height: window.innerHeight
+        };
+
         var scene = new THREE.Scene();
-        //var camera = new THREE.PerspectiveCamera();
-        var worldobject = new world();
-        var screenobject = new screens();
+        const camera = createCamera(sizes);
+        const orbitControls = createControls("orbit", camera, canvas);
+        const renderer = createRender(sizes, canvas);
+        const sunLight = createLight(canvas);
         // this.postprocess = new Postprocess()
         // this.raycaster = new Raycaster()
-
-        //console.log(this)
-
-
-/**
- * -----------------------------------------------------
- * Sizes
- * -----------------------------------------------------
- */
-const sizes = {
-    width: window.innerWidth,
-    height: window.innerHeight
-        };
         
+        // Add elements to scene
+        scene.add(camera);
+        scene.add(sunLight);
+
+        const imageUrls = [
+            "../assets/textures/purefitness-screenshot.png",
+            "../assets/textures/loverunning-screenshot.jpg"
+        ];
+        const imageLinks = [
+            "../assets/textures/purefitness-screenshot.png",
+            "../assets/textures/loverunning-screenshot.jpg"
+        ];
         /**
- * -----------------------------------------------------
- * Renderer
- * -----------------------------------------------------
- */
-const renderer = new THREE.WebGLRenderer({
-    canvas: canvas,
-    antialias: true,
-    alpha: true,
-});
+         * -----------------------------------------------------
+         * Grid Helpers
+         * -----------------------------------------------------
+         */
+        const gridHelper = new THREE.GridHelper(10, 10, '#949494', '#949494');
+        gridHelper.material.transparent = false;
+        gridHelper.material.opacity = 1;
+        gridHelper.visible = true;
+        gridHelper.position.x = 0;
+        scene.add(gridHelper);
 
-document.body.appendChild( renderer.domElement );
-
-renderer.setSize(sizes.width, sizes.height);
-renderer.setClearColor( 0x000000, 0 );
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-// renderer.setClearColor(0xeeeeee, 1);
-
-
-/**
- * -----------------------------------------------------
- * Camera
- * -----------------------------------------------------
- */
-// Base camera
-var camera = new THREE.PerspectiveCamera(50, sizes.width / sizes.height, 0.1, 2000);
-scene.add(camera);
-
-scene.add(worldobject.setInstance());
-scene.add(screenobject.setInstance());
-
-
-
-// Controls
-const orbitControls = new OrbitControls(camera, canvas);
-orbitControls.enableDamping = true;
-orbitControls.dampingFactor = 0.001;
-orbitControls.minDistance = 0;
-orbitControls.enablePan = true;
-// controls.maxDistance = 300;
-// controls.maxPolarAngle = 1.65;
-// controls.minPolarAngle = 1.5;
-// controls.minAzimuthAngle = -3.05;
-// controls.maxAzimuthAngle = 3.05;
-        
-const transformControl = new TransformControls(camera, canvas);
-transformControl.addEventListener('change', render);
-transformControl.setTranslationSnap(1);
-transformControl.size = 0.2;
-transformControl.addEventListener( 'dragging-changed', function ( event ) {
-orbitControls.enabled = ! event.value;
-});
-        
-
-
-    
-/**
- * -----------------------------------------------------
-//  * Light
-//  * -----------------------------------------------------
-//  */
-const sunLight = new THREE.DirectionalLight(0xffffff, 1);
-sunLight.castShadow = true;
-sunLight.shadow.camera.far = 50;
-sunLight.shadow.mapSize.set(1024, 1024);
-sunLight.shadow.normalBias = 0.05;
-sunLight.position.set(5, 250, 0);
-sunLight.rotation.set(0, 10, 10);
-scene.add(sunLight);
-// const sunLightHelper = new THREE.DirectionalLightHelper(sunLight, 3);
-// scene.add(sunLightHelper);
-
-/**
- * -----------------------------------------------------
- * Grid Helpers
- * -----------------------------------------------------
- */
-const gridHelper = new THREE.GridHelper(3, 3, '#949494', '#949494');
-gridHelper.material.transparent = true;
-gridHelper.material.opacity = 0;
-gridHelper.visible = false;
-gridHelper.position.x = 0;
-//scene.add(gridHelper);
-
-/**
- * -----------------------------------------------------
- * Loader Textures
- * -----------------------------------------------------
- */
-const textureLoader = new THREE.TextureLoader();
+        /**
+         * -----------------------------------------------------
+         * Loader and Textures
+         * -----------------------------------------------------
+         */
+        const textureLoader = new THREE.TextureLoader();
         const matcaptexture = textureLoader.load('./assets/textures/5.png');
         const backgroundtexture = textureLoader.load("./assets/textures/stars.png");
-console.log(backgroundtexture);
-/**
- * -----------------------------------------------------
- * Materials
- * -----------------------------------------------------
- */
 
-// base Material
-const normalMaterial = new THREE.MeshNormalMaterial();
-//matcap materials
+        /**
+         * -----------------------------------------------------
+         * Materials
+         * -----------------------------------------------------
+         */
+        // base Material
+        const normalMaterial = new THREE.MeshNormalMaterial();
+        // matcap materials
         const matcapmaterial = new THREE.MeshMatcapMaterial({ matcap: matcaptexture });
 
-// // Simple Shaders Material
-// const shaderMaterial = new THREE.ShaderMaterial({
-//     vertexShader: SimpleVertexShader,
-//     fragmentShader: SimpleFragmentShader,
-// });
+        /**
+         * -----------------------------------------------------
+         * Object definition
+         * -----------------------------------------------------
+         */
+        // Define the screen rectangles
+        let position = 9;
+    
+        for (let i = 0; i < imageUrls.length; i++) {
 
-// scene background material
-// scene.background = new THREE.MeshBasicMaterial({map: backgroundtexture});
+            textureLoader.load(imageUrls[i], function (texture) {
+                
+                let screenMaterial = new THREE.MeshBasicMaterial({
+                    map: texture,
+                });
+                
+                let screenGeometry = new THREE.BoxGeometry(3.2, 1.8, 0.1);
+                // Create Screen object
+                let screen = new THREE.Mesh(screenGeometry, screenMaterial);
+                screen.position.set(-1.5, position, 0);
+                screen.name = "screen " + (i + 1).toString();
+                // screen.userData = {
+                //     URL: imageLinks[i]
+                // };
 
+                //Add screens to scene
+                scene.add(screen);
+                position -= 4.5;
+            });
+        }
 
-/**
- * -----------------------------------------------------
- * Object
- * -----------------------------------------------------
- */
+        //create portfolio text
+        const loader = new FontLoader();
 
+        loader.load('./assets/fonts/helvetiker_regular.typeface.json', function (font) {
+            const geometry = new TextGeometry('Nico\'s Portfolio',
+                {
+                    font: font,
+                    size: 0.5,
+                    height: 0.01,
+                    curveSegments: 20,
+                    bevelEnabled: true,
+                    bevelThickness: 0.1,
+                    bevelSize: 0.05,
+                    bevelOffset: 0,
+                    bevelSegments: 5
+                });
+            
+            geometry.center();
+            geometry.rotateY(Math.PI);
+            var textMesh = new THREE.Mesh(geometry, matcapmaterial);
+            textMesh.castShadow = true;
+            textMesh.receiveShadow = true;
+            textMesh.translateY(18);
+            textMesh.name = "textMesh";
 
-// Group Mesh
-        const groupMesh = new THREE.Group();
-
-// //create robot
-// const OBJloader = new OBJLoader();
-
-// OBJloader.load( '/Assets/subdivided.obj', function ( robotMesh ) {
-
-//     robotMesh.castShadow = true;
-//     robotMesh.receiveShadow = true;
-//     robotMesh.position.set( 55, 0 , -55);
-//     var robotx = robotMesh.position.x;
-//     robotMesh.name = "robotMesh";
-//     scene.add(robotMesh);
-//     tweakpane.addBlade();
-//     tweakpane.addInput(PARAMS, "x"  );
-
-//     camera.position.set(robotMesh.position.x + 3, robotMesh.position.y + 3, robotMesh.position.z - 10);
-//     camera.lookAt(robotMesh.position);
-// } );
-
-
-//create portfolio text
- const loader = new FontLoader();
-
-	loader.load( './assets/fonts/helvetiker_regular.typeface.json', function ( font ) {
-
-
-        const geometry = new TextGeometry( 'NICO\'S \nPORTFOLIO', {
-            font: font,
-            size: 10,
-            height: 1,
-            curveSegments: 20,
-            bevelEnabled: true,
-            bevelThickness: 0.5,
-            bevelSize: 0.5,
-            bevelOffset: 0,
-            bevelSegments: 5
-        } );
-
-        var textMesh = new THREE.Mesh(geometry, matcapmaterial);
-
-        textMesh.castShadow = true;
-        textMesh.receiveShadow = true;
-        textMesh.translateY(200);
-        textMesh.name = "textMesh";
-        geometry.center();
-        geometry.rotateY(Math.PI);
-        groupMesh.add(textMesh);
+            scene.add(textMesh);
+        });
         
-        camera.position.set(textMesh.position.x,textMesh.position.y, textMesh.position.z-200);
-        camera.lookAt(textMesh.position.x,textMesh.position.y,textMesh.position.z);
-        orbitControls.target.set(0,200,200);
-        orbitControls.update();
+        //create building model
+        const fbxLoader = new FBXLoader();
 
-    } );
-
-        //groupMesh.add(mesh);
-        scene.add(groupMesh);
-
-        // groupMesh.children) {
-        //     transformControl.attach(child.children);
-        // }
-        
-        scene.add(transformControl);
-        transformControl.attach(groupMesh);
-/**
- * -----------------------------------------------------
- * Raycasting
- * -----------------------------------------------------
- */
+        fbxLoader.load('./assets/objects/BuildingModel.fbx', function (object) {
+            object.scale.set(0.05, 0.05, 0.05);
+            object.rotateX(-1.5708);
+            object.position.set(0, 13.5, 6);
+            object.name = "buildingModel";
+    
+            scene.add(object);
+        });
+       
+        /**
+         * -----------------------------------------------------
+         * Raycasting
+         * -----------------------------------------------------
+         */
         const cursor = {
             position: new THREE.Vector2(),
             positionReal: new THREE.Vector2(),
@@ -257,7 +168,7 @@ const normalMaterial = new THREE.MeshNormalMaterial();
 
             const raycaster = new THREE.Raycaster();
             raycaster.setFromCamera(cursor.position, camera);
-            const intersects = raycaster.intersectObjects(groupMesh.children, true);
+            const intersects = raycaster.intersectObjects(scene.children, true);
 
             // // collect array of uuids of currently hovered objects
             // var hoveredObjectUuids = intersects.map(el => el.object.uuid);
@@ -300,155 +211,186 @@ const normalMaterial = new THREE.MeshNormalMaterial();
             //     }
             //}
         });
+        var scrollY = window.scrollY;
 
+        /**
+         * -----------------------------------------------------
+         * Events
+         * -----------------------------------------------------
+         */
+         
+        window.addEventListener('scroll', () => {
+            scrollY = window.scrollY;
+            camera.position.setZ(-7);
+        });
+         
 
-/**
- * -----------------------------------------------------
- * Events
- * -----------------------------------------------------
- */
- window.addEventListener( 'keydown', function ( event ) {
+//             /**
+//  * Get current browser viewpane heigtht
+//  */
+//             function _get_window_height() {
+//                 return (
+//                     window.innerHeight ||
+//                     document.documentElement.clientHeight ||
+//                     document.body.clientHeight ||
+//                     0
+//                 );
+//             }
 
-    switch ( event.keyCode ) {
+//             /**
+//              * Get current absolute window scroll position
+//              */
+//             function _get_window_Yscroll() {
+//                 return (
+//                     window.pageYOffset ||
+//                     document.body.scrollTop ||
+//                     document.documentElement.scrollTop ||
+//                     0
+//                 );
+//             }
 
-        case 16: // Shift
-            transformControl.setTranslationSnap( 100 );
-            transformControl.setRotationSnap( THREE.MathUtils.degToRad( 15 ) );
-            transformControl.setScaleSnap( 0.25 );
-            break;
+//             /**
+//              * Get current absolute document height
+//              */
+//             function _get_doc_height() {
+//                 return Math.max(
+//                     document.body.scrollHeight || 0,
+//                     document.documentElement.scrollHeight || 0,
+//                     document.body.offsetHeight || 0,
+//                     document.documentElement.offsetHeight || 0,
+//                     document.body.clientHeight || 0,
+//                     document.documentElement.clientHeight || 0
+//                 );
+//             }
 
-        case 87: // W
-            transformControl.setMode( 'translate' );
-            break;
-
-        case 69: // E
-            transformControl.setMode( 'rotate' );
-            break;
-
-        case 82: // R
-            transformControl.setMode( 'scale' );
-            break;
-
-        case 32: // Spacebar
-            transformControl.enabled = ! transformControl.enabled;
-            break;
-
-        case 27: // Esc
-            transformControl.reset();
-            break;
-    }
-
-} );
+//             /**
+//              * Get current vertical scroll percentage
+//              */
+//             function _get_scroll_percentage() {
+//                 return (
+//                     _get_window_Yscroll() / (_get_doc_height() - _get_window_height())
+//                 );
+//             }
         
-        window.addEventListener('pointerdown', (e) => {
 
-            const raycaster = new THREE.Raycaster();
-            raycaster.setFromCamera(cursor.position, camera);
+
+            // window.addEventListener( 'keydown', function ( event ) {
+
+            //     switch ( event.keyCode ) {
+
+            //         case 16: // Shift
+            //             transformControl.setTranslationSnap( 100 );
+            //             transformControl.setRotationSnap( THREE.MathUtils.degToRad( 15 ) );
+            //             transformControl.setScaleSnap( 0.25 );
+            //             break;
+
+            //         case 87: // W
+            //             transformControl.setMode( 'translate' );
+            //             break;
+
+            //         case 69: // E
+            //             transformControl.setMode( 'rotate' );
+            //             break;
+
+            //         case 82: // R
+            //             transformControl.setMode( 'scale' );
+            //             break;
+
+            //         case 32: // Spacebar
+            //             transformControl.enabled = ! transformControl.enabled;
+            //             break;
+
+            //         case 27: // Esc
+            //             transformControl.reset();
+            //             break;
+            //     }
+
+            // } );
+        
+            window.addEventListener('pointerdown', (e) => {
+
+                const raycaster = new THREE.Raycaster();
+                raycaster.setFromCamera(cursor.position, camera);
    
-            const intersects = raycaster.intersectObjects(scene.children, true);
-            //If found
-            if (intersects.length && intersects[0].object.userData.URL != undefined) {
-                window.open(intersects[0].object.userData.URL);
-            }
-        });
+                const intersects = raycaster.intersectObjects(scene.children, true);
+                //If found
+                if (intersects.length && intersects[0].object.userData.URL != undefined) {
+                    window.open(intersects[0].object.userData.URL);
+                }
+            });
 
-        window.addEventListener('onmouseover', () => {
+            window.addEventListener('onmouseover', () => {
 
-            const raycaster = new THREE.Raycaster();
-            raycaster.setFromCamera(cursor.position, camera);
-            const intersects = raycaster.intersectObjects(groupMesh.children.children, true);
-            // If found
-            if (intersects.length) {
-                intersects[0].object.style = "border: 10px red";
-            }
-        });
+                const raycaster = new THREE.Raycaster();
+                raycaster.setFromCamera(cursor.position, camera);
+                const intersects = raycaster.intersectObjects(objectGroupMesh.children.children, true);
+                // If found
+                if (intersects.length) {
+                    intersects[0].object.style = "border: 10px red";
+                }
+            });
     
-        window.addEventListener('resize', () => {
-            // Update sizes
-            sizes.width = window.innerWidth;
-            sizes.height = window.innerHeight;
+            window.addEventListener('resize', () => {
+                // Update global sizes
+                sizes.width = window.innerWidth;
+                sizes.height = window.innerHeight;
 
-            // Update camera
-            camera.aspect = sizes.width / sizes.height;
-            camera.updateProjectionMatrix();
-
-            // Update renderer
-            renderer.setSize(sizes.width, sizes.height);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
+                // Compute resize ratio
+                var scaleRatio = sizes.width / window.outerWidth;
+                // console.log(scaleRatio);
     
-            if (sizes.width < 1000) {
                 let textmesh = scene.getObjectByName('textMesh');
-                textmesh.scale.set(0.5, 0.5, 0.5);
-                // if(camera.position.x > 24){
-                //     camera.position.x = 15;
-                // }
-    
-                // if(camera.position.x < -15){
-                //     camera.position.x = -15;
-                // }
+                textmesh.scale.set(scaleRatio, scaleRatio, scaleRatio);
+
+                // Update camera
+                camera.aspect = sizes.width / sizes.height;
+                camera.updateProjectionMatrix();
+
+                // Update renderer
+                renderer.setSize(sizes.width, sizes.height);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            });
+
+            /**
+             * -----------------------------------------------------
+             * Animate
+             * -----------------------------------------------------
+             */
+
+            function playScrollAnimations() {
+
             }
-            if (sizes.width > 1000) {
-                let textmesh = scene.getObjectByName('textMesh');
-                textmesh.scale.set(1, 1, 1);
-        
+
+            //gsap.fromTo(groupMesh.getObjectByName('cube').position,{ duration: 1, delay: 1, x: 20}, { duration: 1, delay: 1, x: -20});
+
+            const tick = () => {
+
+                //Update camera and controls
+                // Call tick again on the next frame
+                window.requestAnimationFrame(tick);
                 // if(camera.position.x > 24){
                 //     camera.position.x = 24;
                 // }
-    
+
                 // if(camera.position.x < -24){
                 //     camera.position.x = -24;
                 // }
-            }
-        });
-        
-    function render() {
+                console.log(window.scrollY/ sizes.height / 3);
+                
+                //camera.position.set(textMesh.position.x,textMesh.position.y, textMesh.position.z-10);
+                // Animate camera
+                camera.translateY(18 - window.scrollY / sizes.height / 3);
+                // camera.position.setZ(-7);
+                // orbitControls.target.set(0, 18, 100);
+                orbitControls.update();
 
-        renderer.render( scene, camera );
+                //console.log(scene.children[5])//.getObjectByName('buildingModel').position);
 
-    }
+                // Render
+                renderer.render(scene, camera);
 
-/**
- * -----------------------------------------------------
- * Animate
- * -----------------------------------------------------
- */
 
-//gsap.fromTo(groupMesh.getObjectByName('cube').position,{ duration: 1, delay: 1, x: 20}, { duration: 1, delay: 1, x: -20});
-
-        const tick = () => {
-
-            // Update controls
-            //controls.target.set(scene.getObjectByName("robotMesh").position);
-            // if(camera.position.x > 24){
-            //     camera.position.x = 24;
-            // }
-
-            // if(camera.position.x < -24){
-            //     camera.position.x = -24;
-            // }
-
-            // if(camera.position.z > -200){
-            //     camera.position.z = -200;
-            // }
-
-            // if(camera.position.z < -200){
-            //     camera.position.z = -200;
-            // }
-
-            console.log(sizes.width);
-
-            orbitControls.update();
-
-            // Render
-            renderer.render(scene, camera);
-
-            // Call tick again on the next frame
-            window.requestAnimationFrame(tick);
-        };
-
-        tick();
-    }
- 
-
+            };
+            tick();
+        }
 }

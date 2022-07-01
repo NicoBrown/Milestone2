@@ -12,9 +12,7 @@
   margin: 0;
   border: 0;
 }
-html, body {
-  height: 100%;
-}
+
 body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -53,39 +51,67 @@ p, h1, h2, h3, h4, h5, h6 {
 html, body {
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  overflow-x: hidden;
   font-family: 'Rubik', sans-serif;
   font-family: 'Work Sans', sans-serif;
-  background-color: linear-gradient( white , black);
+  /* background-color: linear-gradient( white , black); */
 }
 
-#button-container i {
-  margin-top: 30px;
-  font-size: 2.5rem;
+#navigation{
+  height:100vh;
+  display: block;
+  position: relative;
+}
+
+#about, #portfolio, #contact {
+display: flex;
+align-items: center;
+height: 100vh;
+position: relative;
+color: #fc0000;
+text-transform: uppercase;
+font-size: 7vmin;
+padding-left: 10%;
+padding-right: 10%;
+will-change: transform;
+}
+
+canvas{
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+kbd {
+  border: 2px solid; 
+  box-shadow: 5px 5px;
+  border-radius: 10% 10%;
+  font-size: 1em; 
+  line-height: 1em; 
+  display: inline-block;
+  font-weight: 600;
+  letter-spacing: normal; 
+  padding: 10px 5px;
+  white-space: nowrap;
+  text-align: center;
+}
+
+#navigation:first-of-type button {
+  /* position: absolute; */
+  margin-top: 2%;
+  margin-left: 2%;
+  font-size: 2rem;
   user-select: none;
+  z-index: 1300;
 }
 
 #offcanvas-button {
   display: block;
-  position: relative;
+  position: fixed;
   justify-content: flex-end;
   user-select: none;
   /* margin-right: 5rem; */
 }
-
-/*---
- title:   Webgl class
- section: Existing code base
- ---
- Webgl Experience class, part of the boilerplate code for the three.js template used
- 
- */
-
- .welcome-section div h1 {
-  padding-top: 15%;
-  font-size: 5rem;
-  margin-left: 10%;
- }
 
  #offcanvasRight{
   z-index: 1200;
