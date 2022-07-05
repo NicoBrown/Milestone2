@@ -44,6 +44,10 @@ p, h1, h2, h3, h4, h5, h6 {
 --bs-gutter-y: 0;
 }
 
+.webgl{
+  display: none;
+}
+
 /**
  * Application / Experience
  *
@@ -65,7 +69,7 @@ html, body {
 
 #about, #portfolio, #contact {
 display: flex;
-align-items: center;
+align-items: flex-start;
 height: 100vh;
 position: relative;
 color: #fc0000;

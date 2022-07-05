@@ -1,7 +1,10 @@
 import * as THREE from 'three';
+import Experience from './experience.js';
 
 export function createRender(sizes, canvas) {
 
+    //this.experience = new Experience();
+    //this.canvas = this.experience.canvas;
     const renderer = new THREE.WebGLRenderer({
         canvas: canvas,
         antialias: true,

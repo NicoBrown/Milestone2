@@ -3,6 +3,7 @@ import { FontLoader } from 'https://unpkg.com/three/examples/jsm/loaders/FontLoa
 import { TextGeometry } from 'https://unpkg.com/three/examples/jsm/geometries/TextGeometry.js';
 import { SVGLoader } from 'https://unpkg.com/three/examples/jsm/loaders/SVGLoader.js';
 import { FBXLoader } from 'https://unpkg.com/three/examples/jsm/loaders/FBXLoader.js';
+import { RectAreaLightUniformsLib } from 'https://unpkg.com/three/examples/jsm/lights/RectAreaLightUniformsLib.js';
 import { TransformControls, TransformControlsGizmo, TransformControlsPlane } from 'https://unpkg.com/three/examples/jsm/controls/TransformControls.js';
 import { createCamera } from "./createCamera.js";
 import { createRender } from "./createRender.js";
@@ -23,23 +24,35 @@ export default class Experience {
         }
         instance = this;
         window.experience = this; // to get access to the class in the terminal 
-
+    
         const sizes = {
+            startingWidth: window.innerWidth,
+            startingHeight: window.innerHeight,
             width: window.innerWidth,
             height: window.innerHeight
         };
+        this.RectAreaLightUniformsLib = new RectAreaLightUniformsLib();
+        this.scene = new THREE.Scene();
+        this.camera = createCamera(sizes);
+        var cameraGroup = new THREE.Group();
+        cameraGroup.name = "cameraGroup";
+        cameraGroup.add(this.camera);
+        cameraGroup.position.set(0, 0, -7);
+        //this.camera.position.set(0, 0, -7);
+        this.camera.lookAt(0, 0, 0);
+        this.orbitControls = createControls("orbit", this.camera, canvas);
+        this.orbitControls.target.set(0, 0, 18);
+        this.renderer = createRender(sizes, canvas);
+        this.sunLight = createLight(canvas);
 
-        var scene = new THREE.Scene();
-        const camera = createCamera(sizes);
-        const orbitControls = createControls("orbit", camera, canvas);
-        const renderer = createRender(sizes, canvas);
-        const sunLight = createLight(canvas);
+        var objectGroup = new THREE.Group();
+        objectGroup.name = "objectGroup";
         // this.postprocess = new Postprocess()
         // this.raycaster = new Raycaster()
         
-        // Add elements to scene
-        scene.add(camera);
-        scene.add(sunLight);
+        // Add elements to this.scene
+        this.scene.add(cameraGroup);
+        this.scene.add(this.sunLight);
 
         const imageUrls = [
             "../assets/textures/purefitness-screenshot.png",
@@ -58,8 +71,8 @@ export default class Experience {
         gridHelper.material.transparent = false;
         gridHelper.material.opacity = 1;
         gridHelper.visible = true;
-        gridHelper.position.x = 0;
-        scene.add(gridHelper);
+        gridHelper.translateY(-18);
+        this.scene.add(gridHelper);
 
         /**
          * -----------------------------------------------------
@@ -86,7 +99,7 @@ export default class Experience {
          * -----------------------------------------------------
          */
         // Define the screen rectangles
-        let position = 9;
+        let position = -9;
     
         for (let i = 0; i < imageUrls.length; i++) {
 
@@ -101,13 +114,13 @@ export default class Experience {
                 let screen = new THREE.Mesh(screenGeometry, screenMaterial);
                 screen.position.set(-1.5, position, 0);
                 screen.name = "screen " + (i + 1).toString();
-                // screen.userData = {
-                //     URL: imageLinks[i]
-                // };
+                screen.userData = {
+                    URL: imageLinks[i]
+                };
 
-                //Add screens to scene
-                scene.add(screen);
-                position -= 4.5;
+                //Add screens to this.scene
+                objectGroup.add(screen);
+                position += -4.5;
             });
         }
 
@@ -133,10 +146,9 @@ export default class Experience {
             var textMesh = new THREE.Mesh(geometry, matcapmaterial);
             textMesh.castShadow = true;
             textMesh.receiveShadow = true;
-            textMesh.translateY(18);
             textMesh.name = "textMesh";
 
-            scene.add(textMesh);
+            objectGroup.add(textMesh);
         });
         
         //create building model
@@ -145,12 +157,61 @@ export default class Experience {
         fbxLoader.load('./assets/objects/BuildingModel.fbx', function (object) {
             object.scale.set(0.05, 0.05, 0.05);
             object.rotateX(-1.5708);
-            object.position.set(0, 13.5, 6);
+            object.position.set(0, -3.5, 6);
             object.name = "buildingModel";
+
+            for (var i = 0; i < object.children.length; i++) 
+            {   
+                //console.log(object.children[i]);
+                
+                if (object.children[i].name.includes("Duct"))
+                {
+                    //console.log(object.children[i]);
+                    object.children[i].material = new THREE.MeshPhongMaterial( { color: 0x00b3ff } );
+                }
+                else if (object.children[i].name.includes("Diffuser"))
+                {
+                    //console.log(object.children[i]);
+                    object.children[i].material = new THREE.MeshPhongMaterial( { color: 0x00b3ff } );
+                    object.children[i].translateZ(-0.1);
+                }
+                else if (object.children[i].name.includes("Fixture"))
+                {
+                    object.children[i].material = new THREE.MeshPhongMaterial({ color: 0xffffff });
+                    object.children[i].translateZ(0.2);
+
+                    const bulbGeometry = new THREE.BoxGeometry(0.06, 0.01, 0.06);
+				    var bulbLight = new THREE.PointLight( 0xffee88, 1, 10, 20 );
+
+                        var bulbMat = new THREE.MeshStandardMaterial( {
+                            emissive: 0xffee88,
+                            emissiveIntensity: 100,
+                            color: 0x000000
+                        });
+                    object.children[i].material = bulbMat;
+                    object.children[i].material.emissiveIntensity = 10;
+                    object.children[i].translateZ(0.2);
+                    bulbLight.add( new THREE.Mesh( bulbGeometry, bulbMat ) );
+                    //bulbLight.position.set( 0,-2.8,0 );
+                    bulbLight.castShadow = true;
+                    objectGroup.add( bulbLight );
+
+                    var pointLightHelper = new THREE.PointLightHelper(bulbLight, 1);
+                    objectGroup.add(pointLightHelper);
+
+                }
+                else {
+                    //console.log(object.children[i]);
+                    object.children[i].material = new THREE.MeshStandardMaterial({color: 0x999999});
+                    object.children[i].material.opacity = 0.5;
+                }
+            };
     
-            scene.add(object);
+            objectGroup.add(object);
+            
         });
        
+        this.scene.add(objectGroup);
         /**
          * -----------------------------------------------------
          * Raycasting
@@ -167,8 +228,8 @@ export default class Experience {
             cursor.positionReal.y = event.clientY;
 
             const raycaster = new THREE.Raycaster();
-            raycaster.setFromCamera(cursor.position, camera);
-            const intersects = raycaster.intersectObjects(scene.children, true);
+            raycaster.setFromCamera(cursor.position, this.camera);
+            const intersects = raycaster.intersectObjects(this.scene.children, true);
 
             // // collect array of uuids of currently hovered objects
             // var hoveredObjectUuids = intersects.map(el => el.object.uuid);
@@ -211,66 +272,75 @@ export default class Experience {
             //     }
             //}
         });
-        var scrollY = window.scrollY;
+        //var scrollY = window.scrollY;
 
         /**
          * -----------------------------------------------------
          * Events
          * -----------------------------------------------------
          */
-         
+        
         window.addEventListener('scroll', () => {
             scrollY = window.scrollY;
-            camera.position.setZ(-7);
+                        
+            let scroll =(-18 * _get_scroll_percentage());
+            //console.log(scroll);
+            // this.orbitControls.target.set(0, scroll, 10);
+            // this.orbitControls.update();
+            this.camera.position.set(0, scroll, 0);
+            this.camera.lookAt(0, scroll, 0);
+            //cameraGroup.translateY(18); 
+            // this.orbitControls.target.set(0, 18, 10);
+
         });
          
 
-//             /**
-//  * Get current browser viewpane heigtht
-//  */
-//             function _get_window_height() {
-//                 return (
-//                     window.innerHeight ||
-//                     document.documentElement.clientHeight ||
-//                     document.body.clientHeight ||
-//                     0
-//                 );
-//             }
+            /**
+ * Get current browser viewpane heigtht
+ */
+            function _get_window_height() {
+                return (
+                    window.innerHeight ||
+                    document.documentElement.clientHeight ||
+                    document.body.clientHeight ||
+                    0
+                );
+            }
 
-//             /**
-//              * Get current absolute window scroll position
-//              */
-//             function _get_window_Yscroll() {
-//                 return (
-//                     window.pageYOffset ||
-//                     document.body.scrollTop ||
-//                     document.documentElement.scrollTop ||
-//                     0
-//                 );
-//             }
+            /**
+             * Get current absolute window scroll position
+             */
+            function _get_window_Yscroll() {
+                return (
+                    window.pageYOffset ||
+                    document.body.scrollTop ||
+                    document.documentElement.scrollTop ||
+                    0
+                );
+            }
 
-//             /**
-//              * Get current absolute document height
-//              */
-//             function _get_doc_height() {
-//                 return Math.max(
-//                     document.body.scrollHeight || 0,
-//                     document.documentElement.scrollHeight || 0,
-//                     document.body.offsetHeight || 0,
-//                     document.documentElement.offsetHeight || 0,
-//                     document.body.clientHeight || 0,
-//                     document.documentElement.clientHeight || 0
-//                 );
-//             }
+            /**
+             * Get current absolute document height
+             */
+            function _get_doc_height() {
+                return Math.max(
+                    document.body.scrollHeight || 0,
+                    document.documentElement.scrollHeight || 0,
+                    document.body.offsetHeight || 0,
+                    document.documentElement.offsetHeight || 0,
+                    document.body.clientHeight || 0,
+                    document.documentElement.clientHeight || 0
+                );
+            }
 
-//             /**
-//              * Get current vertical scroll percentage
-//              */
-//             function _get_scroll_percentage() {
-//                 return (
-//                     _get_window_Yscroll() / (_get_doc_height() - _get_window_height())
-//                 );
-//             }
+            /**
+             * Get current vertical scroll percentage
+             */
+            function _get_scroll_percentage() {
+                return (
+                    _get_window_Yscroll() / (_get_doc_height() - _get_window_height())
+                );
+            }
         
 
 
@@ -310,26 +380,26 @@ export default class Experience {
             window.addEventListener('pointerdown', (e) => {
 
                 const raycaster = new THREE.Raycaster();
-                raycaster.setFromCamera(cursor.position, camera);
+                raycaster.setFromCamera(cursor.position, this.camera);
    
-                const intersects = raycaster.intersectObjects(scene.children, true);
+                const intersects = raycaster.intersectObjects(this.scene.children, true);
                 //If found
-                if (intersects.length && intersects[0].object.userData.URL != undefined) {
-                    window.open(intersects[0].object.userData.URL);
-                }
+                // if (intersects.length && intersects[0].object.userData.URL != undefined) {
+                //     window.open(intersects[0].object.userData.URL);
+                // }
             });
 
             window.addEventListener('onmouseover', () => {
 
                 const raycaster = new THREE.Raycaster();
-                raycaster.setFromCamera(cursor.position, camera);
+                raycaster.setFromCamera(cursor.position, this.camera);
                 const intersects = raycaster.intersectObjects(objectGroupMesh.children.children, true);
                 // If found
                 if (intersects.length) {
                     intersects[0].object.style = "border: 10px red";
                 }
             });
-    
+        
             window.addEventListener('resize', () => {
                 // Update global sizes
                 sizes.width = window.innerWidth;
@@ -337,18 +407,18 @@ export default class Experience {
 
                 // Compute resize ratio
                 var scaleRatio = sizes.width / window.outerWidth;
-                // console.log(scaleRatio);
     
-                let textmesh = scene.getObjectByName('textMesh');
-                textmesh.scale.set(scaleRatio, scaleRatio, scaleRatio);
+                let textmesh = this.scene.getObjectByName('textMesh');
+                
+                textmesh.scale.set( scaleRatio, scaleRatio, scaleRatio);
 
-                // Update camera
-                camera.aspect = sizes.width / sizes.height;
-                camera.updateProjectionMatrix();
+                // Update this.camera
+                this.camera.aspect = sizes.width / sizes.height;
+                this.camera.updateProjectionMatrix();
 
                 // Update renderer
-                renderer.setSize(sizes.width, sizes.height);
-                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                this.renderer.setSize(sizes.width, sizes.height);
+                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             });
 
             /**
@@ -357,37 +427,35 @@ export default class Experience {
              * -----------------------------------------------------
              */
 
-            function playScrollAnimations() {
 
-            }
 
             //gsap.fromTo(groupMesh.getObjectByName('cube').position,{ duration: 1, delay: 1, x: 20}, { duration: 1, delay: 1, x: -20});
 
             const tick = () => {
 
-                //Update camera and controls
+                //Update this.camera and controls
                 // Call tick again on the next frame
                 window.requestAnimationFrame(tick);
-                // if(camera.position.x > 24){
-                //     camera.position.x = 24;
+                // if(this.camera.position.x > 24){
+                //     this.camera.position.x = 24;
                 // }
 
-                // if(camera.position.x < -24){
-                //     camera.position.x = -24;
+                // if(this.camera.position.x < -24){
+                //     this.camera.position.x = -24;
                 // }
-                console.log(window.scrollY/ sizes.height / 3);
+                //console.log(this.scene);
                 
-                //camera.position.set(textMesh.position.x,textMesh.position.y, textMesh.position.z-10);
-                // Animate camera
-                camera.translateY(18 - window.scrollY / sizes.height / 3);
-                // camera.position.setZ(-7);
+                //this.camera.position.set(textMesh.position.x,textMesh.position.y, textMesh.position.z-10);
+                // Animate this.camera
+                // cameraGroup.position.set(0,18,-7);
+                //this.camera.lookAt(new THREE.Vector3(0, 18, 10));
                 // orbitControls.target.set(0, 18, 100);
-                orbitControls.update();
+                //this.orbitControls.update();
 
-                //console.log(scene.children[5])//.getObjectByName('buildingModel').position);
+                //console.log(this.scene.children[5])//.getObjectByName('buildingModel').position);
 
                 // Render
-                renderer.render(scene, camera);
+                this.renderer.render(this.scene, this.camera);
 
 
             };
