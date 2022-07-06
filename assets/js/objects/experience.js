@@ -9,6 +9,7 @@ import { createCamera } from "./createCamera.js";
 import { createRender } from "./createRender.js";
 import { createLight } from './createLight.js';
 import { createControls } from './createControls.js';
+import { getContributions } from '../api.js';
 
 // Gsap
 //import gsap from 'gsap'
@@ -31,6 +32,10 @@ export default class Experience {
             width: window.innerWidth,
             height: window.innerHeight
         };
+
+        const datanb = getContributions('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', 'nicobrown');
+        console.log(datanb);
+        
         this.RectAreaLightUniformsLib = new RectAreaLightUniformsLib();
         this.scene = new THREE.Scene();
         this.camera = createCamera(sizes);
@@ -67,12 +72,12 @@ export default class Experience {
          * Grid Helpers
          * -----------------------------------------------------
          */
-        const gridHelper = new THREE.GridHelper(10, 10, '#949494', '#949494');
-        gridHelper.material.transparent = false;
-        gridHelper.material.opacity = 1;
-        gridHelper.visible = true;
-        gridHelper.translateY(-18);
-        this.scene.add(gridHelper);
+        // const gridHelper = new THREE.GridHelper(10, 10, '#949494', '#949494');
+        // gridHelper.material.transparent = false;
+        // gridHelper.material.opacity = 1;
+        // gridHelper.visible = true;
+        // gridHelper.translateY(-18);
+        // this.scene.add(gridHelper);
 
         /**
          * -----------------------------------------------------
@@ -99,7 +104,7 @@ export default class Experience {
          * -----------------------------------------------------
          */
         // Define the screen rectangles
-        let position = -9;
+        let position = -8;
     
         for (let i = 0; i < imageUrls.length; i++) {
 
@@ -112,7 +117,14 @@ export default class Experience {
                 let screenGeometry = new THREE.BoxGeometry(3.2, 1.8, 0.1);
                 // Create Screen object
                 let screen = new THREE.Mesh(screenGeometry, screenMaterial);
-                screen.position.set(-1.5, position, 0);
+                if (i % 2 == 0)
+                {
+                    screen.position.set(-2, position, 0);
+                }
+                else {
+                    screen.position.set(2, position, 0);                    
+                }
+
                 screen.name = "screen " + (i + 1).toString();
                 screen.userData = {
                     URL: imageLinks[i]
@@ -120,7 +132,7 @@ export default class Experience {
 
                 //Add screens to this.scene
                 objectGroup.add(screen);
-                position += -4.5;
+                position += -4;
             });
         }
 
@@ -156,8 +168,9 @@ export default class Experience {
 
         fbxLoader.load('./assets/objects/BuildingModel.fbx', function (object) {
             object.scale.set(0.05, 0.05, 0.05);
+            object.rotateY(0.6); 
             object.rotateX(-1.5708);
-            object.position.set(0, -3.5, 6);
+            object.position.set(5, -5.5, 4);
             object.name = "buildingModel";
 
             for (var i = 0; i < object.children.length; i++) 
@@ -180,8 +193,8 @@ export default class Experience {
                     object.children[i].material = new THREE.MeshPhongMaterial({ color: 0xffffff });
                     object.children[i].translateZ(0.2);
 
-                    const bulbGeometry = new THREE.BoxGeometry(0.06, 0.01, 0.06);
-				    var bulbLight = new THREE.PointLight( 0xffee88, 1, 10, 20 );
+                    //const bulbGeometry = new THREE.BoxGeometry(0.06, 0.01, 0.06);
+				    // var bulbLight = new THREE.PointLight( 0xffee88, 1, 10, 20 );
 
                         var bulbMat = new THREE.MeshStandardMaterial( {
                             emissive: 0xffee88,
@@ -191,13 +204,13 @@ export default class Experience {
                     object.children[i].material = bulbMat;
                     object.children[i].material.emissiveIntensity = 10;
                     object.children[i].translateZ(0.2);
-                    bulbLight.add( new THREE.Mesh( bulbGeometry, bulbMat ) );
+                    //bulbLight.add( new THREE.Mesh( bulbGeometry, bulbMat ) );
                     //bulbLight.position.set( 0,-2.8,0 );
-                    bulbLight.castShadow = true;
-                    objectGroup.add( bulbLight );
+                    //bulbLight.castShadow = true;
+                    //objectGroup.add( bulbLight );
 
-                    var pointLightHelper = new THREE.PointLightHelper(bulbLight, 1);
-                    objectGroup.add(pointLightHelper);
+                    // var pointLightHelper = new THREE.PointLightHelper(bulbLight, 1);
+                    //objectGroup.add(pointLightHelper);
 
                 }
                 else {
@@ -285,10 +298,10 @@ export default class Experience {
                         
             let scroll =(-18 * _get_scroll_percentage());
             //console.log(scroll);
-            // this.orbitControls.target.set(0, scroll, 10);
-            // this.orbitControls.update();
-            this.camera.position.set(0, scroll, 0);
-            this.camera.lookAt(0, scroll, 0);
+            this.orbitControls.target.set(0, scroll, 10);
+            this.orbitControls.update();
+            this.camera.position.set(camera.position.x, scroll, camera.position.z);
+            this.camera.lookAt(camera.position.x, scroll, camera.position.z);
             //cameraGroup.translateY(18); 
             // this.orbitControls.target.set(0, 18, 10);
 
@@ -342,28 +355,13 @@ export default class Experience {
                 );
             }
         
-
-
             // window.addEventListener( 'keydown', function ( event ) {
-
             //     switch ( event.keyCode ) {
 
             //         case 16: // Shift
             //             transformControl.setTranslationSnap( 100 );
             //             transformControl.setRotationSnap( THREE.MathUtils.degToRad( 15 ) );
             //             transformControl.setScaleSnap( 0.25 );
-            //             break;
-
-            //         case 87: // W
-            //             transformControl.setMode( 'translate' );
-            //             break;
-
-            //         case 69: // E
-            //             transformControl.setMode( 'rotate' );
-            //             break;
-
-            //         case 82: // R
-            //             transformControl.setMode( 'scale' );
             //             break;
 
             //         case 32: // Spacebar
@@ -374,7 +372,6 @@ export default class Experience {
             //             transformControl.reset();
             //             break;
             //     }
-
             // } );
         
             window.addEventListener('pointerdown', (e) => {
