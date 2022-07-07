@@ -16,7 +16,7 @@
   "bugs": {
     "url": "https://github.com/NicoBrown/Milestone2/issues"
   },
-  "homepage": "https://nicobrown.github.io/Milestone2/",
+  "homepage": "https://nicobrown.github.io/Milestone2/public/",
   "devDependencies": {
     "jest": "^28.1.1",
     "jshint": "^2.13.4",
