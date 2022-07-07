@@ -4,7 +4,8 @@
   "description": "Milestone Project 2",
   "main": "main.js",
   "scripts": {
-    "test": "jest --reporter list"
+    "test": "jest --reporter list",
+    "deploy": "gh-pages -d src"
   },
   "repository": {
     "type": "git",
@@ -20,5 +21,8 @@
     "jest": "^28.1.1",
     "jshint": "^2.13.4",
     "three": "^0.141.0"
+  },
+  "dependencies": {
+    "gh-pages": "^4.0.0"
   }
 }
