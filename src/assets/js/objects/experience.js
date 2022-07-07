@@ -69,7 +69,7 @@ export default class Experience {
         this.scene.add(this.sunLight);
 
         const imageUrls = [
-            "./src/assets/textures/purefitness-screenshot.png",
+            "../src/assets/textures/purefitness-screenshot.png",
             "./src/assets/textures/loverunning-screenshot.jpg"
         ];
         const imageLinks = [
