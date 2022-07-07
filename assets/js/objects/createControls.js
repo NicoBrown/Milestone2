@@ -12,15 +12,15 @@ export function createControls(type, camera, canvas) {
     {
         // standard orbit controls for page navigation
         controls = new OrbitControls(camera, canvas);
-        // controls.enableDamping = true;
-        // controls.dampingFactor = 0.0001;
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.001;
         controls.minDistance = 0;
         controls.enablePan = true;
         controls.maxDistance = 100;
-        // controls.maxPolarAngle = 1.63;
-        // controls.minPolarAngle = 1.53;
-        // controls.minAzimuthAngle = 3.07;
-        // controls.maxAzimuthAngle = -3.07;
+        controls.maxPolarAngle = 1.63;
+        controls.minPolarAngle = 1.53;
+        controls.minAzimuthAngle = 3.07;
+        controls.maxAzimuthAngle = -3.07;
         controls.enableZoom = false;
     }
 
@@ -31,13 +31,15 @@ export function createControls(type, camera, canvas) {
         controls.enableDamping = false;
         controls.minDistance = 0;
         controls.enablePan = true;
+
+        controls.enabled = false;
     }
 
     else if (type == "transform")
     {
         // transform controls for debugging
         controls = new TransformControls(camera, canvas);
-        controls.addEventListener('change', render);
+        //controls.addEventListener('change', render);
         controls.setTranslationSnap(1);
         controls.size = 0.2;
         controls.addEventListener( 'dragging-changed', function ( event ) {

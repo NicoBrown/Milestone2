@@ -32,12 +32,12 @@ export default class Experience {
             width: window.innerWidth,
             height: window.innerHeight
         };
-
-        const datanb = getContributions('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', 'nicobrown');
-        console.log(datanb);
         
+
         this.RectAreaLightUniformsLib = new RectAreaLightUniformsLib();
         this.scene = new THREE.Scene();
+
+        //set Camera up
         this.camera = createCamera(sizes);
         var cameraGroup = new THREE.Group();
         cameraGroup.name = "cameraGroup";
@@ -45,13 +45,23 @@ export default class Experience {
         cameraGroup.position.set(0, 0, -7);
         //this.camera.position.set(0, 0, -7);
         this.camera.lookAt(0, 0, 0);
+
+        // set controls
+
         this.orbitControls = createControls("orbit", this.camera, canvas);
         this.orbitControls.target.set(0, 0, 18);
+        this.freeControls = createControls("free", this.camera, canvas);
+        this.transformControls = createControls("transform", this.camera, canvas);
+        
+
         this.renderer = createRender(sizes, canvas);
         this.sunLight = createLight(canvas);
 
         var objectGroup = new THREE.Group();
         objectGroup.name = "objectGroup";
+        
+        var contribGroup = new THREE.Group();
+        objectGroup.name = "contribGroup";
         // this.postprocess = new Postprocess()
         // this.raycaster = new Raycaster()
         
@@ -117,12 +127,13 @@ export default class Experience {
                 let screenGeometry = new THREE.BoxGeometry(3.2, 1.8, 0.1);
                 // Create Screen object
                 let screen = new THREE.Mesh(screenGeometry, screenMaterial);
-                if (i % 2 == 0)
-                {
+                if (i % 2 == 0) {
                     screen.position.set(-2, position, 0);
+                    screen.rotateY(-0.6);
                 }
                 else {
-                    screen.position.set(2, position, 0);                    
+                    screen.position.set(2, position, 0);
+                    screen.rotateY(0.6);
                 }
 
                 screen.name = "screen " + (i + 1).toString();
@@ -168,39 +179,35 @@ export default class Experience {
 
         fbxLoader.load('./assets/objects/BuildingModel.fbx', function (object) {
             object.scale.set(0.05, 0.05, 0.05);
-            object.rotateY(0.6); 
+            object.rotateY(0.6);
             object.rotateX(-1.5708);
             object.position.set(5, -5.5, 4);
             object.name = "buildingModel";
 
-            for (var i = 0; i < object.children.length; i++) 
-            {   
+            for (var i = 0; i < object.children.length; i++) {
                 //console.log(object.children[i]);
                 
-                if (object.children[i].name.includes("Duct"))
-                {
+                if (object.children[i].name.includes("Duct")) {
                     //console.log(object.children[i]);
-                    object.children[i].material = new THREE.MeshPhongMaterial( { color: 0x00b3ff } );
+                    object.children[i].material = new THREE.MeshPhongMaterial({ color: 0x00b3ff });
                 }
-                else if (object.children[i].name.includes("Diffuser"))
-                {
+                else if (object.children[i].name.includes("Diffuser")) {
                     //console.log(object.children[i]);
-                    object.children[i].material = new THREE.MeshPhongMaterial( { color: 0x00b3ff } );
+                    object.children[i].material = new THREE.MeshPhongMaterial({ color: 0x00b3ff });
                     object.children[i].translateZ(-0.1);
                 }
-                else if (object.children[i].name.includes("Fixture"))
-                {
+                else if (object.children[i].name.includes("Fixture")) {
                     object.children[i].material = new THREE.MeshPhongMaterial({ color: 0xffffff });
                     object.children[i].translateZ(0.2);
 
                     //const bulbGeometry = new THREE.BoxGeometry(0.06, 0.01, 0.06);
-				    // var bulbLight = new THREE.PointLight( 0xffee88, 1, 10, 20 );
+                    // var bulbLight = new THREE.PointLight( 0xffee88, 1, 10, 20 );
 
-                        var bulbMat = new THREE.MeshStandardMaterial( {
-                            emissive: 0xffee88,
-                            emissiveIntensity: 100,
-                            color: 0x000000
-                        });
+                    var bulbMat = new THREE.MeshStandardMaterial({
+                        emissive: 0xffee88,
+                        emissiveIntensity: 100,
+                        color: 0x000000
+                    });
                     object.children[i].material = bulbMat;
                     object.children[i].material.emissiveIntensity = 10;
                     object.children[i].translateZ(0.2);
@@ -215,7 +222,7 @@ export default class Experience {
                 }
                 else {
                     //console.log(object.children[i]);
-                    object.children[i].material = new THREE.MeshStandardMaterial({color: 0x999999});
+                    object.children[i].material = new THREE.MeshStandardMaterial({ color: 0x999999 });
                     object.children[i].material.opacity = 0.5;
                 }
             };
@@ -223,7 +230,47 @@ export default class Experience {
             objectGroup.add(object);
             
         });
-       
+
+
+
+        //add Github Contributions objects
+        getContributions().then((data) => {
+            //console.log(data)
+            for (let i = 0; i < 52; i++) {
+                //console.log(data.contributions[i])
+                for (let j = 0; j < 7; j++) {
+                    {
+                        //console.log(data.contributions[i][j].contributionCount);
+                        let colors = new THREE.Color( 0xffffff );
+                        colors.setHex( Math.random() * 0xffffff );
+                        let boxMaterial = new THREE.MeshLambertMaterial({ color: colors });
+                        
+                        let box = new THREE.BoxGeometry(1, data.contributions[i][j].contributionCount, 1);
+                        box.translate(0,data.contributions[i][j].contributionCount/2,0)
+                        // Create Screen object
+                        let contribObject = new THREE.Mesh(box, boxMaterial);
+        
+                        contribObject.name = "box " + i.toString() + ", " + j.toString();
+                        contribObject.position.set(i, -18, j);
+        
+                        //Add screens to this.scene
+                        contribGroup.add(contribObject);
+                        
+                    }
+                    
+                }
+                
+            }
+            contribGroup.translateY(-18);
+            contribGroup.translateZ(3);
+            contribGroup.translateX(4);
+            contribGroup.scale.set(0.2, 0.2, 0.2);
+            contribGroup.rotateY(Math.PI);
+        })
+
+        this.transformControls.attach(contribGroup)
+
+        objectGroup.add(contribGroup);
         this.scene.add(objectGroup);
         /**
          * -----------------------------------------------------
@@ -300,8 +347,8 @@ export default class Experience {
             //console.log(scroll);
             this.orbitControls.target.set(0, scroll, 10);
             this.orbitControls.update();
-            this.camera.position.set(camera.position.x, scroll, camera.position.z);
-            this.camera.lookAt(camera.position.x, scroll, camera.position.z);
+            this.camera.position.set(this.camera.position.x, scroll, this.camera.position.z);
+            this.camera.lookAt(this.camera.position.x, scroll, this.camera.position.z);
             //cameraGroup.translateY(18); 
             // this.orbitControls.target.set(0, 18, 10);
 
@@ -355,24 +402,36 @@ export default class Experience {
                 );
             }
         
-            // window.addEventListener( 'keydown', function ( event ) {
-            //     switch ( event.keyCode ) {
+            window.addEventListener( 'keydown', function ( event ) {
+                switch ( event.keyCode ) {
 
-            //         case 16: // Shift
-            //             transformControl.setTranslationSnap( 100 );
-            //             transformControl.setRotationSnap( THREE.MathUtils.degToRad( 15 ) );
-            //             transformControl.setScaleSnap( 0.25 );
-            //             break;
+                    // case 16: // Shift
+                    //     transformControl.setTranslationSnap( 100 );
+                    //     transformControl.setRotationSnap( THREE.MathUtils.degToRad( 15 ) );
+                    //     transformControl.setScaleSnap( 0.25 );
+                    //     break;
 
-            //         case 32: // Spacebar
-            //             transformControl.enabled = ! transformControl.enabled;
-            //             break;
+                    case 32: // Spacebar
+                        if (this.experience.freeControls.enabled) {
+                            this.experience.freeControls.enabled = false;
+                            this.experience.orbitControls.enabled = true;
+                        }
+                        else {
+                            this.experience.freeControls.enabled = true;
+                            this.experience.orbitControls.target.set(0, -9, 10);
+                            this.experience.orbitControls.enabled = false;
+                            // this.experience.orbitControls.target.set(0, scroll, 10);
+                            // this.experience.orbitControls.update();
+                            this.experience.camera.position.set(this.camera.position.x, scroll, this.camera.position.z);
+                            this.experience.camera.lookAt(this.camera.position.x, scroll, this.camera.position.z);
+                        }
+                        break;
 
-            //         case 27: // Esc
-            //             transformControl.reset();
-            //             break;
-            //     }
-            // } );
+                    // case 27: // Esc
+                    //     transformControl.reset();
+                    //     break;
+                }
+            } );
         
             window.addEventListener('pointerdown', (e) => {
 
