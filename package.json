@@ -24,5 +24,8 @@
   },
   "dependencies": {
     "gh-pages": "^4.0.0"
+  },
+  "gh-pages-deploy": {
+    "staticpath": "public"
   }
 }
