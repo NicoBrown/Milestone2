@@ -1,17 +1,15 @@
 import * as THREE from 'three';
-import { FontLoader } from 'https://unpkg.com/three/examples/jsm/loaders/FontLoader.js';
-import { TextGeometry } from 'https://unpkg.com/three/examples/jsm/geometries/TextGeometry.js';
-import { SVGLoader } from 'https://unpkg.com/three/examples/jsm/loaders/SVGLoader.js';
-import { FBXLoader } from 'https://unpkg.com/three/examples/jsm/loaders/FBXLoader.js';
-import { RectAreaLightUniformsLib } from 'https://unpkg.com/three/examples/jsm/lights/RectAreaLightUniformsLib.js';
-import { TransformControls, TransformControlsGizmo, TransformControlsPlane } from 'https://unpkg.com/three/examples/jsm/controls/TransformControls.js';
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
+import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
+import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
+import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
+import { TransformControls, TransformControlsGizmo, TransformControlsPlane } from 'three/examples/jsm/controls/TransformControls.js';
 import { createCamera } from "./createCamera.js";
 import { createRender } from "./createRender.js";
 import { createLight } from './createLight.js';
 import { createControls } from './createControls.js';
 import { getContributions } from '../api.js';
-
-
 
 // Singleton
 let instance = null;
@@ -70,11 +68,11 @@ export default class Experience {
 
         const imageUrls = [
             "../src/assets/textures/purefitness-screenshot.png",
-            "./src/assets/textures/loverunning-screenshot.jpg"
+            "../src/assets/textures/loverunning-screenshot.jpg"
         ];
         const imageLinks = [
-            "./src/assets/textures/purefitness-screenshot.png",
-            "./src/assets/textures/loverunning-screenshot.jpg"
+            "../src/assets/textures/purefitness-screenshot.png",
+            "../src/assets/textures/loverunning-screenshot.jpg"
         ];
         /**
          * -----------------------------------------------------
@@ -94,8 +92,8 @@ export default class Experience {
          * -----------------------------------------------------
          */
         const textureLoader = new THREE.TextureLoader();
-        const matcaptexture = textureLoader.load('./src/assets/textures/5.png');
-        const backgroundtexture = textureLoader.load("./src/assets/textures/stars.png");
+        const matcaptexture = textureLoader.load('./textures/5.png');
+        //const backgroundtexture = textureLoader.load("./assets/textures/stars.png");
 
         /**
          * -----------------------------------------------------
@@ -240,12 +238,12 @@ export default class Experience {
                 for (let j = 0; j < 7; j++) {
                     {
                         //console.log(data.contributions[i][j].contributionCount);
-                        let colors = new THREE.Color( 0xffffff );
-                        colors.setHex( Math.random() * 0xffffff );
+                        let colors = new THREE.Color(0xffffff);
+                        colors.setHex(Math.random() * 0xffffff);
                         let boxMaterial = new THREE.MeshLambertMaterial({ color: colors });
                         
                         let box = new THREE.BoxGeometry(1, data.contributions[i][j].contributionCount, 1);
-                        box.translate(0,data.contributions[i][j].contributionCount/2,0)
+                        box.translate(0, data.contributions[i][j].contributionCount / 2, 0)
                         // Create Screen object
                         let contribObject = new THREE.Mesh(box, boxMaterial);
         
@@ -260,14 +258,14 @@ export default class Experience {
                 }
                 
             }
-            contribGroup.translateY(-18);
+            contribGroup.translateY(-9);
             contribGroup.translateZ(3);
-            contribGroup.translateX(4);
-            contribGroup.scale.set(0.2, 0.2, 0.2);
+            contribGroup.translateX(20);
+            contribGroup.scale.set(1, 1, 1);
             contribGroup.rotateY(Math.PI);
-        })
+        });
 
-        this.transformControls.attach(contribGroup)
+        this.transformControls.attach(contribGroup);
 
         objectGroup.add(contribGroup);
         this.scene.add(objectGroup);

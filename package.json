@@ -2,10 +2,11 @@
   "name": "milestone2",
   "version": "1.0.0",
   "description": "Milestone Project 2",
-  "main": "main.js",
+  "main": "main.bundle.js",
   "scripts": {
     "test": "jest --reporter list",
-    "deploy": "gh-pages -d public"
+    "deploy": "gh-pages -d dist",
+    "build": "webpack --config webpack.config.js"
   },
   "repository": {
     "type": "git",
@@ -16,14 +17,18 @@
   "bugs": {
     "url": "https://github.com/NicoBrown/Milestone2/issues"
   },
-  "homepage": "https://nicobrown.github.io/Milestone2/",
+  "homepage": "https://nicobrown.github.io/Milestone2/dist",
   "devDependencies": {
+    "css-loader": "^6.7.1",
     "jest": "^28.1.1",
     "jshint": "^2.13.4",
-    "three": "^0.141.0"
+    "style-loader": "^3.3.1",
+    "three": "^0.141.0",
+    "webpack-cli": "^4.10.0"
   },
   "dependencies": {
-    "gh-pages": "^4.0.0"
+    "gh-pages": "^4.0.0",
+    "webpack": "^5.73.0"
   },
   "gh-pages-deploy": {
     "staticpath": "https://nicobrown.github.io/Milestone2/"

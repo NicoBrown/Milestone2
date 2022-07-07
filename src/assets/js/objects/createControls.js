@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'https://unpkg.com/three/examples/jsm/controls/OrbitControls.js';
-import { TransformControls, TransformControlsGizmo, TransformControlsPlane } from 'https://unpkg.com/three/examples/jsm/controls/TransformControls.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { TransformControls, TransformControlsGizmo, TransformControlsPlane } from 'three/examples/jsm/controls/TransformControls.js';
 import Experience from './experience.js';
 
 export function createControls(type, camera, canvas) {
