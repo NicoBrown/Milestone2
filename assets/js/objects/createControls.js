@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'https://unpkg.com/three/examples/jsm/controls/OrbitControls.js';
 import { TransformControls, TransformControlsGizmo, TransformControlsPlane } from 'https://unpkg.com/three/examples/jsm/controls/TransformControls.js';
-import Experience from './experience.js';
+import Experience from 'https://nicobrown.github.io/Milestone2/objects/experience.js';
 
 export function createControls(type, camera, canvas) {
 

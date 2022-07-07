@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import Experience from './experience.js'; 
+import Experience from 'https://nicobrown.github.io/Milestone2/objects/experience.js'; 
        
 export function createCamera(sizes) {
 
