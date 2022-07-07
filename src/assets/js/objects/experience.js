@@ -69,12 +69,12 @@ export default class Experience {
         this.scene.add(this.sunLight);
 
         const imageUrls = [
-            "../src/assets/textures/purefitness-screenshot.png",
-            "../src/assets/textures/loverunning-screenshot.jpg"
+            "./src/assets/textures/purefitness-screenshot.png",
+            "./src/assets/textures/loverunning-screenshot.jpg"
         ];
         const imageLinks = [
-            "../src/assets/textures/purefitness-screenshot.png",
-            "../src/assets/textures/loverunning-screenshot.jpg"
+            "./src/assets/textures/purefitness-screenshot.png",
+            "./src/assets/textures/loverunning-screenshot.jpg"
         ];
         /**
          * -----------------------------------------------------
@@ -94,8 +94,8 @@ export default class Experience {
          * -----------------------------------------------------
          */
         const textureLoader = new THREE.TextureLoader();
-        const matcaptexture = textureLoader.load('../src/assets/textures/5.png');
-        const backgroundtexture = textureLoader.load("../src/assets/textures/stars.png");
+        const matcaptexture = textureLoader.load('./src/assets/textures/5.png');
+        const backgroundtexture = textureLoader.load("./src/assets/textures/stars.png");
 
         /**
          * -----------------------------------------------------

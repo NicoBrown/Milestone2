@@ -16,7 +16,7 @@
   "bugs": {
     "url": "https://github.com/NicoBrown/Milestone2/issues"
   },
-  "homepage": "https://nicobrown.github.io/Milestone2/public/index.html",
+  "homepage": "https://nicobrown.github.io/Milestone2/public/index",
   "devDependencies": {
     "jest": "^28.1.1",
     "jshint": "^2.13.4",
@@ -26,6 +26,6 @@
     "gh-pages": "^4.0.0"
   },
   "gh-pages-deploy": {
-    "staticpath": "public"
+    "staticpath": "https://nicobrown.github.io/Milestone2/"
   }
 }
