@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "test": "jest --reporter list",
-    "deploy": "gh-pages -d src"
+    "deploy": "gh-pages -d public"
   },
   "repository": {
     "type": "git",
@@ -16,7 +16,7 @@
   "bugs": {
     "url": "https://github.com/NicoBrown/Milestone2/issues"
   },
-  "homepage": "https://nicobrown.github.io/Milestone2/public/",
+  "homepage": "https://nicobrown.github.io/Milestone2/public/index.html",
   "devDependencies": {
     "jest": "^28.1.1",
     "jshint": "^2.13.4",
