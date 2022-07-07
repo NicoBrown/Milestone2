@@ -69,12 +69,12 @@ export default class Experience {
         this.scene.add(this.sunLight);
 
         const imageUrls = [
-            "../assets/textures/purefitness-screenshot.png",
-            "../assets/textures/loverunning-screenshot.jpg"
+            "../src/assets/textures/purefitness-screenshot.png",
+            "../src/assets/textures/loverunning-screenshot.jpg"
         ];
         const imageLinks = [
-            "../assets/textures/purefitness-screenshot.png",
-            "../assets/textures/loverunning-screenshot.jpg"
+            "../src/assets/textures/purefitness-screenshot.png",
+            "../src/assets/textures/loverunning-screenshot.jpg"
         ];
         /**
          * -----------------------------------------------------
@@ -94,8 +94,8 @@ export default class Experience {
          * -----------------------------------------------------
          */
         const textureLoader = new THREE.TextureLoader();
-        const matcaptexture = textureLoader.load('./assets/textures/5.png');
-        const backgroundtexture = textureLoader.load("./assets/textures/stars.png");
+        const matcaptexture = textureLoader.load('../src/assets/textures/5.png');
+        const backgroundtexture = textureLoader.load("../src/assets/textures/stars.png");
 
         /**
          * -----------------------------------------------------
@@ -149,7 +149,7 @@ export default class Experience {
         //create portfolio text
         const loader = new FontLoader();
 
-        loader.load('./assets/fonts/helvetiker_regular.typeface.json', function (font) {
+        loader.load('../src/assets/fonts/helvetiker_regular.typeface.json', function (font) {
             const geometry = new TextGeometry('Nico\'s Portfolio',
                 {
                     font: font,
@@ -176,7 +176,7 @@ export default class Experience {
         //create building model
         const fbxLoader = new FBXLoader();
 
-        fbxLoader.load('./assets/objects/BuildingModel.fbx', function (object) {
+        fbxLoader.load('../src/assets/objects/BuildingModel.fbx', function (object) {
             object.scale.set(0.05, 0.05, 0.05);
             object.rotateY(0.6);
             object.rotateX(-1.5708);
