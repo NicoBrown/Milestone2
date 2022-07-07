@@ -11,8 +11,7 @@ import { createLight } from './createLight.js';
 import { createControls } from './createControls.js';
 import { getContributions } from '../api.js';
 
-// Gsap
-//import gsap from 'gsap'
+
 
 // Singleton
 let instance = null;
