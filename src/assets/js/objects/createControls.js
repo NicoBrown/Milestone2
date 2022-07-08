@@ -50,4 +50,4 @@ export function createControls(type, camera, canvas) {
             
     return controls;
 
-}
+};

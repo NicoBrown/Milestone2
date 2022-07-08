@@ -21,4 +21,4 @@ export function createRender(sizes, canvas) {
 
     return renderer;
 
-}
+};

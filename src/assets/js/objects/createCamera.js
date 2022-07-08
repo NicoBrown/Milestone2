@@ -9,4 +9,4 @@ export function createCamera(sizes) {
     //camera.lookAt(0, 0, 0);
     return camera;
     
-}
+};

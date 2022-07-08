@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
-import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
 import { TransformControls, TransformControlsGizmo, TransformControlsPlane } from 'three/examples/jsm/controls/TransformControls.js';
@@ -10,6 +10,7 @@ import { createRender } from "./createRender.js";
 import { createLight } from './createLight.js';
 import { createControls } from './createControls.js';
 import { getContributions } from '../api.js';
+import { MeshMatcapMaterial } from 'three';
 
 // Singleton
 let instance = null;
@@ -44,7 +45,7 @@ export default class Experience {
         this.camera.lookAt(0, 0, 0);
 
         // set controls
-
+        this.scroll = 0;
         this.orbitControls = createControls("orbit", this.camera, canvas);
         this.orbitControls.target.set(0, 0, 18);
         this.freeControls = createControls("free", this.camera, canvas);
@@ -52,6 +53,9 @@ export default class Experience {
         
 
         this.renderer = createRender(sizes, canvas);
+        this.scene.fog = new THREE.Fog('lightblue',1,40);
+        this.renderer.setClearColor(this.scene.fog.color);
+        this.renderer.setClearAlpha(0.5);
         this.sunLight = createLight(canvas);
 
         var objectGroup = new THREE.Group();
@@ -67,12 +71,12 @@ export default class Experience {
         this.scene.add(this.sunLight);
 
         const imageUrls = [
-            "../src/assets/textures/purefitness-screenshot.png",
-            "../src/assets/textures/loverunning-screenshot.jpg"
+            "../dist/assets/textures/purefitness-screenshot.png",
+            "../dist/assets/textures/loverunning-screenshot.jpg"
         ];
         const imageLinks = [
-            "../src/assets/textures/purefitness-screenshot.png",
-            "../src/assets/textures/loverunning-screenshot.jpg"
+            "../dist/assets/textures/purefitness-screenshot.png",
+            "../dist/assets/textures/loverunning-screenshot.jpg"
         ];
         /**
          * -----------------------------------------------------
@@ -92,7 +96,7 @@ export default class Experience {
          * -----------------------------------------------------
          */
         const textureLoader = new THREE.TextureLoader();
-        const matcaptexture = textureLoader.load('./textures/5.png');
+        const matcaptexture = textureLoader.load('../dist/assets/textures/5.png');
         //const backgroundtexture = textureLoader.load("./assets/textures/stars.png");
 
         /**
@@ -104,6 +108,7 @@ export default class Experience {
         const normalMaterial = new THREE.MeshNormalMaterial();
         // matcap materials
         const matcapmaterial = new THREE.MeshMatcapMaterial({ matcap: matcaptexture });
+        matcapmaterial.fog = false;
 
         /**
          * -----------------------------------------------------
@@ -147,7 +152,7 @@ export default class Experience {
         //create portfolio text
         const loader = new FontLoader();
 
-        loader.load('../src/assets/fonts/helvetiker_regular.typeface.json', function (font) {
+        loader.load('../dist/assets/fonts/helvetiker_regular.typeface.json', function (font) {
             const geometry = new TextGeometry('Nico\'s Portfolio',
                 {
                     font: font,
@@ -222,7 +227,7 @@ export default class Experience {
                     object.children[i].material = new THREE.MeshStandardMaterial({ color: 0x999999 });
                     object.children[i].material.opacity = 0.5;
                 }
-            };
+            }
     
             objectGroup.add(object);
             
@@ -232,7 +237,6 @@ export default class Experience {
 
         //add Github Contributions objects
         getContributions().then((data) => {
-            //console.log(data)
             for (let i = 0; i < 52; i++) {
                 //console.log(data.contributions[i])
                 for (let j = 0; j < 7; j++) {
@@ -242,8 +246,10 @@ export default class Experience {
                         colors.setHex(Math.random() * 0xffffff);
                         let boxMaterial = new THREE.MeshLambertMaterial({ color: colors });
                         
-                        let box = new THREE.BoxGeometry(1, data.contributions[i][j].contributionCount, 1);
-                        box.translate(0, data.contributions[i][j].contributionCount / 2, 0)
+                        if (data.contributions[i][j].contributionCount != -1) {
+                            let box = new THREE.BoxGeometry(1, data.contributions[i][j].contributionCount / 2, 1);
+                            box.translate(0, data.contributions[i][j].contributionCount / 2, 0);
+                       
                         // Create Screen object
                         let contribObject = new THREE.Mesh(box, boxMaterial);
         
@@ -252,22 +258,24 @@ export default class Experience {
         
                         //Add screens to this.scene
                         contribGroup.add(contribObject);
-                        
+                        }
+                        else {
+                            continue;
+                        }
                     }
                     
                 }
                 
             }
-            contribGroup.translateY(-9);
+            contribGroup.translateY(-12);
             contribGroup.translateZ(3);
-            contribGroup.translateX(20);
-            contribGroup.scale.set(1, 1, 1);
+            contribGroup.translateX(15);
+            contribGroup.scale.set(0.5, 0.5, 0.5);
             contribGroup.rotateY(Math.PI);
         });
-
-        this.transformControls.attach(contribGroup);
-
+        //this.transformControls.attach(contribGroup);
         objectGroup.add(contribGroup);
+        
         this.scene.add(objectGroup);
         /**
          * -----------------------------------------------------
@@ -278,57 +286,57 @@ export default class Experience {
             position: new THREE.Vector2(),
             positionReal: new THREE.Vector2(),
         };
-        window.addEventListener('mousemove', (event) => {
-            cursor.position.x = (event.clientX / sizes.width) * 2 - 1;
-            cursor.position.y = -(event.clientY / sizes.height) * 2 + 1;
-            cursor.positionReal.x = event.clientX;
-            cursor.positionReal.y = event.clientY;
+        // window.addEventListener('mousemove', (event) => {
+        //     cursor.position.x = (event.clientX / sizes.width) * 2 - 1;
+        //     cursor.position.y = -(event.clientY / sizes.height) * 2 + 1;
+        //     cursor.positionReal.x = event.clientX;
+        //     cursor.positionReal.y = event.clientY;
 
-            const raycaster = new THREE.Raycaster();
-            raycaster.setFromCamera(cursor.position, this.camera);
-            const intersects = raycaster.intersectObjects(this.scene.children, true);
+        //     const raycaster = new THREE.Raycaster();
+        //     raycaster.setFromCamera(cursor.position, this.camera);
+        //     const intersects = raycaster.intersectObjects(this.scene.children, true);
 
-            // // collect array of uuids of currently hovered objects
-            // var hoveredObjectUuids = intersects.map(el => el.object.uuid);
+        //     // // collect array of uuids of currently hovered objects
+        //     // var hoveredObjectUuids = intersects.map(el => el.object.uuid);
 
-            // // If found
-            //     for (let i = 0; i < intersects.length; i++) {
-            //   var hoveredObj = intersects[i].object;
-            //   if (hoveredObjects[hoveredObj.uuid]) {
-            //     continue; // this object was hovered and still hovered
-            //   }
-            //     intersects[0].object.scale, 1, {
-            //         x: 2,
-            //         ease: gsap.Expo.easeOut,
-            //         y: 2,
-            //         ease: gsap.Expo.easeOut,
-            //         z: 2,
-            //         ease: gsap.Expo.easeOut
-            //       };
+        //     // // If found
+        //     //     for (let i = 0; i < intersects.length; i++) {
+        //     //   var hoveredObj = intersects[i].object;
+        //     //   if (hoveredObjects[hoveredObj.uuid]) {
+        //     //     continue; // this object was hovered and still hovered
+        //     //   }
+        //     //     intersects[0].object.scale, 1, {
+        //     //         x: 2,
+        //     //         ease: gsap.Expo.easeOut,
+        //     //         y: 2,
+        //     //         ease: gsap.Expo.easeOut,
+        //     //         z: 2,
+        //     //         ease: gsap.Expo.easeOut
+        //     //       };
 
-            //       hoveredObjects[hoveredObj.uuid] = hoveredObj;
+        //     //       hoveredObjects[hoveredObj.uuid] = hoveredObj;
 
-            //       for (let uuid of Object.keys(hoveredObjects)) {
-            //         let idx = hoveredObjectUuids.indexOf(uuid);
-            //       if (idx === -1) {
-            //           // object with given uuid was unhovered
-            //         let unhoveredObj = hoveredObjects[uuid];
-            //         delete hoveredObjects[uuid];
+        //     //       for (let uuid of Object.keys(hoveredObjects)) {
+        //     //         let idx = hoveredObjectUuids.indexOf(uuid);
+        //     //       if (idx === -1) {
+        //     //           // object with given uuid was unhovered
+        //     //         let unhoveredObj = hoveredObjects[uuid];
+        //     //         delete hoveredObjects[uuid];
 
 
-            //         this.to(unhoveredObj.scale, 2, {
-            //           x: 1,
-            //           ease: gsap.Expo.easeOut,
-            //           y: 1,
-            //           ease: gsap.Expo.easeOut,
-            //           z: 1,
-            //           ease: gsap.Expo.easeOut
-            //         });
+        //     //         this.to(unhoveredObj.scale, 2, {
+        //     //           x: 1,
+        //     //           ease: gsap.Expo.easeOut,
+        //     //           y: 1,
+        //     //           ease: gsap.Expo.easeOut,
+        //     //           z: 1,
+        //     //           ease: gsap.Expo.easeOut
+        //     //         });
 
-            //       }
-            //     }
-            //}
-        });
+        //     //       }
+        //     //     }
+        //     //}
+        // });
         //var scrollY = window.scrollY;
 
         /**
@@ -340,7 +348,7 @@ export default class Experience {
         window.addEventListener('scroll', () => {
             scrollY = window.scrollY;
                         
-            let scroll =(-18 * _get_scroll_percentage());
+            scroll =(-18 * _get_scroll_percentage());
             //console.log(scroll);
             this.orbitControls.target.set(0, scroll, 10);
             this.orbitControls.update();
@@ -412,6 +420,9 @@ export default class Experience {
                         if (this.experience.freeControls.enabled) {
                             this.experience.freeControls.enabled = false;
                             this.experience.orbitControls.enabled = true;
+                            this.experience.cameraGroup.position.set(this.experience.camera.position.x, scroll, -7);
+                            //this.experience.camera.position.set(this.camera.position.x, scroll, this.camera.position.z);
+                            this.experience.camera.lookAt(this.experience.camera.position.x, scroll, this.experience.camera.position.z);
                         }
                         else {
                             this.experience.freeControls.enabled = true;
@@ -419,8 +430,9 @@ export default class Experience {
                             this.experience.orbitControls.enabled = false;
                             // this.experience.orbitControls.target.set(0, scroll, 10);
                             // this.experience.orbitControls.update();
-                            this.experience.camera.position.set(this.camera.position.x, scroll, this.camera.position.z);
-                            this.experience.camera.lookAt(this.camera.position.x, scroll, this.camera.position.z);
+                            this.experience.cameraGroup.position.set(this.experience.camera.position.x, scroll, -7);
+                            //this.experience.camera.position.set(this.camera.position.x, scroll, this.camera.position.z);
+                            this.experience.camera.lookAt(this.experience.camera.position.x, scroll, this.experience.camera.position.z);
                         }
                         break;
 
@@ -429,29 +441,17 @@ export default class Experience {
                     //     break;
                 }
             } );
-        
-            window.addEventListener('pointerdown', (e) => {
 
-                const raycaster = new THREE.Raycaster();
-                raycaster.setFromCamera(cursor.position, this.camera);
-   
-                const intersects = raycaster.intersectObjects(this.scene.children, true);
-                //If found
-                // if (intersects.length && intersects[0].object.userData.URL != undefined) {
-                //     window.open(intersects[0].object.userData.URL);
-                // }
-            });
+            // window.addEventListener('onmouseover', () => {
 
-            window.addEventListener('onmouseover', () => {
-
-                const raycaster = new THREE.Raycaster();
-                raycaster.setFromCamera(cursor.position, this.camera);
-                const intersects = raycaster.intersectObjects(objectGroupMesh.children.children, true);
-                // If found
-                if (intersects.length) {
-                    intersects[0].object.style = "border: 10px red";
-                }
-            });
+            //     const raycaster = new THREE.Raycaster();
+            //     raycaster.setFromCamera(cursor.position, this.camera);
+            //     const intersects = raycaster.intersectObjects(objectGroupMesh.children.children, true);
+            //     // If found
+            //     if (intersects.length) {
+            //         intersects[0].object.style = "border: 10px red";
+            //     }
+            // });
         
             window.addEventListener('resize', () => {
                 // Update global sizes
@@ -461,9 +461,14 @@ export default class Experience {
                 // Compute resize ratio
                 var scaleRatio = sizes.width / window.outerWidth;
     
-                let textmesh = this.scene.getObjectByName('textMesh');
+                let textmesh = this.scene.traverse(object => {
+                    
+                    object.scale.set( scaleRatio, scaleRatio, scaleRatio);
+
+
+
+                });
                 
-                textmesh.scale.set( scaleRatio, scaleRatio, scaleRatio);
 
                 // Update this.camera
                 this.camera.aspect = sizes.width / sizes.height;
@@ -480,23 +485,11 @@ export default class Experience {
              * -----------------------------------------------------
              */
 
-
-
-            //gsap.fromTo(groupMesh.getObjectByName('cube').position,{ duration: 1, delay: 1, x: 20}, { duration: 1, delay: 1, x: -20});
-
             const tick = () => {
 
                 //Update this.camera and controls
                 // Call tick again on the next frame
                 window.requestAnimationFrame(tick);
-                // if(this.camera.position.x > 24){
-                //     this.camera.position.x = 24;
-                // }
-
-                // if(this.camera.position.x < -24){
-                //     this.camera.position.x = -24;
-                // }
-                //console.log(this.scene);
                 
                 //this.camera.position.set(textMesh.position.x,textMesh.position.y, textMesh.position.z-10);
                 // Animate this.camera
@@ -505,13 +498,10 @@ export default class Experience {
                 // orbitControls.target.set(0, 18, 100);
                 //this.orbitControls.update();
 
-                //console.log(this.scene.children[5])//.getObjectByName('buildingModel').position);
-
                 // Render
                 this.renderer.render(this.scene, this.camera);
-
 
             };
             tick();
         }
-}
+};

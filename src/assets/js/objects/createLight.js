@@ -17,4 +17,4 @@ export function createLight() {
     // const sunLightHelper = new THREE.DirectionalLightHelper(sunLight, 3);
     // scene.add(sunLightHelper);
     
-}
+};

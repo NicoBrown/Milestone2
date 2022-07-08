@@ -7,6 +7,6 @@ export async function getContributions() {
   var data = await (await fetch(`https://corsanywhere.herokuapp.com/https://github-contributions-api.deno.dev/nicobrown.json`)).json();
   
     return data;
-  }
+};
 
 

@@ -1,9 +1,12 @@
+// Try the environment variable, otherwise use root
+const ASSET_PATH = process.env.ASSET_PATH || '/';
+
 module.exports = {
     mode: 'production',
-    entry: ['./dist/main.bundle.js',"./src/assets/css/main.css"],
+    entry: ['./src/assets/js/index.js','./src/assets/css/main.css'],
     output: {
         filename: 'main.bundle.js',
-        publicPath: "https://nicobrown.github.io/Milestone2/",
+        publicPath: ASSET_PATH,
     },
     module: {
         rules: [{ test: /\.css$/,use: [

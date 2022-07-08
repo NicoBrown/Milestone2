@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest --reporter list",
     "deploy": "gh-pages -d dist",
-    "build": "webpack --config webpack.config.js"
+    "build": "webpack --config webpack.config.js && npm run deploy"
   },
   "repository": {
     "type": "git",
@@ -17,7 +17,7 @@
   "bugs": {
     "url": "https://github.com/NicoBrown/Milestone2/issues"
   },
-  "homepage": "https://nicobrown.github.io/Milestone2/dist",
+  "homepage": "https://nicobrown.github.io/Milestone2",
   "devDependencies": {
     "css-loader": "^6.7.1",
     "jest": "^28.1.1",
@@ -31,6 +31,6 @@
     "webpack": "^5.73.0"
   },
   "gh-pages-deploy": {
-    "staticpath": "https://nicobrown.github.io/Milestone2/"
+    "staticpath": "https://nicobrown.github.io/Milestone2/dist"
   }
 }
